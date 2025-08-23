@@ -1,0 +1,18 @@
+package ${bussiPackage}.${entityPackage}.mapper;
+
+import org.apache.ibatis.annotations.Param;
+import ${bussiPackage}.${entityPackage}.entity.${entityName};
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import com.github.yulichang.base.MPJBaseMapper;
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: hanwei
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+@Mapper
+public interface ${entityName}Mapper extends MPJBaseMapper<${entityName}> {
+
+}

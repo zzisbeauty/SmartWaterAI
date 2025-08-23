@@ -1,0 +1,61 @@
+package ${bussiPackage}.${entityPackage}.entity;
+
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.format.NumberFormat;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.NotEmpty;
+
+/**
+ * @Description: ${tableVo.ftlDescription}
+ * @Author: hanwei
+ * @Date:   ${.now?string["yyyy-MM-dd"]}
+ * @Version: V1.0
+ */
+@Data
+@TableName("${tableName}")
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ExcelIgnoreUnannotated
+@ColumnWidth(25)
+@Schema(title="${entityName}对象", description="${tableVo.ftlDescription}")
+public class ${entityName} {
+
+    <#list originalColumns as po>
+	/**${po.filedComment}*/
+	<#if po.fieldName == primaryKeyField>
+	@TableId(type = IdType.ASSIGN_ID)
+	<#else>
+  <#if po.fieldType =='java.util.Date'>
+	<#if po.fieldDbType =='date'>
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	<#elseif po.fieldDbType =='datetime'>
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    <#elseif po.fieldDbType =='datetime2'>
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    <#elseif po.fieldDbType =='timestamp'>
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+	</#if>
+	<#else>
+  </#if>
+  </#if>
+    @Schema(description = "${po.filedComment}")
+    @NotEmpty(message = "${po.filedComment}不能为空")
+    @ExcelProperty("${po.filedComment}")
+    @ApiParameter(name = "${po.fieldName}", description = "${po.filedComment}", location = ApiEnum.PARAMETER_LOCATION_BODY)
+	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
+	</#list>
+}

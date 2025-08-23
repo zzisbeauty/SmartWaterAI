@@ -1,0 +1,84 @@
+<script setup lang="tsx">
+/**
+ * 详情弹框，当前存放views/WarnMonitor/Risk/Detail.vue目录下
+ * 后期如果其他页面详情弹框与该页面详情弹框样式相同，将抽离为公共组件
+ */
+import { reactive, onMounted, ref } from 'vue'
+import {dialogFields} from '../${entityName}Api'
+
+const list: any = reactive([])
+
+// 根据外部配置对象，动态渲染所需展示字段
+const feedBackData = (row) => {
+  console.log(row)
+  Object.keys(dialogFields).forEach((key: any) => {
+    list.push({
+      label: dialogFields[key],
+      value: row[key]
+    })
+  })
+  console.log(list)
+}
+
+const label = ref()
+onMounted(() => {
+  let maxWidth = 0
+  // 动态设置详情弹框lable字段展示最大宽度
+  setTimeout(() => {
+    label.value.forEach((cell) => {
+      const width = cell.offsetWidth
+      if (width > maxWidth) {
+        maxWidth = width
+      }
+    })
+    console.log(maxWidth)
+
+    label.value.forEach((cell) => {
+      cell.style.minWidth = maxWidth + 'px'
+    })
+  }, 0)
+
+  // label.forEach((label) => {
+  //   label.style.maxWidth = maxWidth + 'px'
+  // })
+})
+
+defineExpose({
+  feedBackData
+})
+</script>
+
+<template>
+  <div>
+    <div class="list-cell" v-for="(item, index) in list" :key="index">
+      <div class="label" ref="label">{{ item.label }}:</div>
+      <div class="value">{{ item.value }}</div>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="less">
+.list-cell {
+  display: flex;
+  padding: 0 50px;
+  padding-bottom: 20px;
+  .label {
+    margin-right: 16px;
+    text-align: right;
+    font-family: Microsoft YaHei;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 14px;
+    letter-spacing: 0em;
+    color: #777777;
+  }
+  .value {
+    font-family: Microsoft YaHei;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 14px;
+    letter-spacing: 0em;
+    color: #333333;
+  }
+}
+</style>

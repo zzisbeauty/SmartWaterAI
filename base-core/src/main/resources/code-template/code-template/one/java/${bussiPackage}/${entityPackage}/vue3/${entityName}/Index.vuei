@@ -1,0 +1,464 @@
+<script setup lang="tsx">
+// ts表单配置对象类型，不强制使用
+import { FormSchema } from '@/components/Form'
+// 搜索组件
+import { Search } from '@/components/Search'
+// 文字国际化，不强制使用
+import { useI18n } from '@/hooks/web/useI18n'
+// 表格左上角按钮部分组件
+import { tableTitle } from '@/components/tableTitle'
+// 表格组件
+import { Table } from '@/components/Table'
+
+// 表格hook函数，配置表格必备
+import { useTable } from '@/hooks/web/useTable'
+// 弹框组件
+import { Dialog } from '@/components/Dialog'
+// vue内置对象，以下对象大部分场景需要
+import { nextTick, onMounted, reactive, ref, unref } from 'vue'
+// 跨页面通讯对象，不强制使用
+// import { useEventBus } from '@/hooks/event/useEventBus'
+// 配置页面各组件内容大对象，必备
+import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
+// 按钮组件
+import { BaseButton } from '@/components/Button'
+// 导入导出组件
+import { Import } from '@/components/Import'
+// 新增编辑弹框内容
+import Edit from './components/Edit.vue'
+// 详情内容
+import Detail from './components/Detail.vue'
+// get\post接口
+import { commonGetData, commonPostData, dealParams } from '@/utils/requestJava'
+// elementplus UI库内置按钮和消息提示组件
+import { ElButton, ElMessageBox } from 'element-plus'
+// 文件下载插件（第三方）
+// 文件下载插件（手动封装）
+import fileExport from '@/utils/fileExports'
+// 按钮防抖，必备
+import { debounce } from 'lodash-es'
+// 请求后消息提示组件，必备
+import { useMessage } from '@/hooks/web/useMessage'
+// 更多组件
+import { CheckMore } from '@/components/CheckMore'
+// 全局配置的动作点权限code
+import permissionCode from '@/utils/permissionCode'
+import {
+  handleExport,
+  handleGetFile,
+  handleMulDelete,
+  handleDelete,
+  handleFileUpload,
+  handleFetchData
+} from './${entityName}Api'
+defineOptions({
+  name: '${entityName}Page'
+})
+
+/**
+ * 定义搜索参数，并执行搜索事件
+ */
+const searchParams = ref({})
+const setSearchParams = (params: any) => {
+  // 字段翻译名称转义
+  params = renameAnyProps(params)
+  searchParams.value = params
+  getList()
+}
+
+// 定义一个类型转换函数
+function renameAnyProps(obj: Record<string, any>): Record<string, any> {
+  const newObj: Record<string, any> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const newKey = key.endsWith('_dictText') ? key.replace('_dictText', '') : key
+    newObj[newKey] = value
+  }
+  return newObj
+}
+
+/**
+ * 表格初始化，定义获取表格数据接口
+ * 解构表格数据对象
+ *  loading, dataList, total, currentPage, pageSize并绑定组件
+ * 解构表格方法
+ *  getList, getElTableExpose, refresh
+ *  请求数据、获取表格获取行内容、刷新
+ */
+const { tableRegister, tableState, tableMethods } = useTable({
+  fetchDataApi: async () => {
+    const { currentPage, pageSize } = tableState
+    searchParams.value = dealParams(unref(searchParams), searchSchema)
+    const res: any = await handleFetchData({
+      pageNo: unref(currentPage),
+      pageSize: unref(pageSize),
+      ...unref(searchParams)
+    })
+    return {
+      list: res.result.records,
+      total: res.result.total
+    }
+  }
+})
+const { loading, dataList, total, currentPage, pageSize } = tableState
+const { getList, getElTableExpose, refresh } = tableMethods
+
+
+
+const { t } = useI18n()
+
+/**
+ * 页面复合对象 search搜索栏对象  table表格对象
+ * 初始化配置搜索项、表格等重要组件
+ * 配置search对象即可使相应的对象在搜索组件中展示、配置table对象同理
+ */
+const crudSchemas = reactive<CrudSchema[]>([
+  {
+    field: 'selection',
+    table: {
+      type: 'selection'
+    }
+  },
+  {
+    field: 'index',
+    label: t('tableDemo.index'),
+    type: 'index'
+  },
+  <#list columns as po>
+  <#if po.fieldName !='id'>
+   {
+      label: '${po.filedComment}',
+      field: '${po.fieldName}',
+    },
+  </#if>
+  </#list>
+  {
+    field: 'action',
+    label: t('tableDemo.action'),
+    table: {
+      /**
+       * slot插槽 此处支持jsx/tsx语法
+       */
+      slots: {
+        default: (data: any) => {
+          return (
+            <>
+              <ElButton
+                type="primary"
+                link
+                onClick={() => btnAction(data.row, '详情')}
+                style="margin-right: 10px"
+                v-actPermission={permissionCode.VIEW}
+              >
+                详情
+              </ElButton>
+              <CheckMore list={moreList(data.row)}></CheckMore>
+            </>
+          )
+        }
+      }
+    }
+  }
+])
+
+/**
+ * 配置更多按钮
+ * list: [{
+ *  label 按钮名称
+ *  code 按钮权限代码
+ *  callback 按钮回调函数
+ * }]
+ * code: [当前更多按钮当中所有按钮权限代码]
+ */
+const moreList = (row) => {
+  return {
+    list: [
+      {
+        label: '编辑',
+        code: permissionCode.EDIT,
+        callback: () => {
+          editDialog(row, '编辑')
+        }
+      },
+      {
+        label: '删除',
+        code: permissionCode.DELETE,
+        callback: () => {
+          doDelete(row)
+        }
+      }
+    ],
+    code: [permissionCode.EDIT, permissionCode.DELETE]
+  }
+}
+
+/**
+ * 将配置的crudSchemas装进hood函数，得到全部配置
+ * 得到的allSchemas当中可以分别拆除多种组件配置，
+ *  包括searchSchema、tableColumns，可抽出这些对象并二次封装
+ */
+const { allSchemas } = useCrudSchemas(crudSchemas)
+const searchSchema = reactive<FormSchema[]>([])
+searchSchema.push(...allSchemas.searchSchema)
+
+// 导入导出相关
+const importVisible = ref(false) // 控制导入窗口的显示
+const importExplain = ref(['以文本格式填写相关内容', '正确填写类型名称，可查阅相关数据字典']) // 导入模板内的导入说明
+const importTitle = ref('导入样例') //导入弹窗标题
+const doUpload = () => {
+  importTitle.value = '导入文件'
+  importVisible.value = true
+}
+
+// 获取导入模板
+const getFile = async () => {
+  // 此处写下载模板的方法
+  // 参数按需填写
+  try {
+    // 发送 GET 请求获取模板文件
+    handleGetFile().then((res: any) => {
+      const fileData = res.result
+      console.log(fileData)
+      // url 下载  推荐
+      // download(fileData)
+      // 文件流格式下载 base64格式下载
+      // download(fileData, 'filename.pdf', 'application/pdf')
+      fileExport(fileData, '${tableVo.ftlDescription}.xlsx')
+    })
+  } catch (error) {
+    console.error('下载文件时出错：', error)
+  }
+}
+// 导入上传文件
+const fileUpload = (file) => {
+  const whiteList = ['xls', 'xlsx']
+  if (!whiteList.includes(file.name.split('.')[1])) {
+    useMessage('warning', '请上传xlsx格式的文件')
+    return false
+  } else {
+    handleFileUpload({
+      file: file
+    }).then((res: any) => {
+      if (res.success) {
+        getList()
+        useMessage('success', res.message)
+      } else {
+        useMessage('error', res.message)
+      }
+    })
+  }
+}
+
+// 导出文件方法
+const doExport = () => {
+  handleExport().then((res: any) => {
+    if (res.success) {
+      fileExport(res.result, '${tableVo.ftlDescription}.xlsx')
+      useMessage('success', res.message)
+    } else {
+      useMessage('error', '导出失败')
+    }
+  })
+}
+
+// 弹框相关
+const dialogTitle = ref('')
+const dialogVisible = ref(false)
+const edit = ref()
+const detail = ref()
+const openDialog = () => {
+  dialogVisible.value = true
+}
+const closeDialog = () => {
+  dialogVisible.value = false
+}
+
+// 按钮点击事件控制
+const btnAction = (row, title) => {
+  // 根据类型分配弹框
+  if (title === '新增') {
+    openDialog()
+    dialogTitle.value = title
+  } else if (title === '编辑' || title === '详情') {
+    editDialog(row, title)
+  } else if (title === '删除') {
+    doDelete(row)
+  } else if (title === '批量删除') {
+    doMutiDelete()
+  }
+}
+// 编辑
+const editDialog = (row, title) => {
+  openDialog()
+  dialogTitle.value = title
+  if (title === '编辑') {
+    nextTick(() => {
+      // 编辑时填装弹框数据
+      edit.value.feedBackData(row)
+    })
+  } else {
+    nextTick(() => {
+      // 展示详情时填装数据
+      detail.value.feedBackData(row)
+    })
+  }
+}
+// 单选删除
+const doDelete = (row) => {
+  ElMessageBox.confirm('是否确认删除？', '警告', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      handleDelete({ id: row.id }).then((res: any) => {
+        if (res.success) {
+          getList()
+          useMessage('success', res.message)
+        } else {
+          useMessage('error', '删除失败')
+        }
+      })
+    })
+    .catch(() => {})
+}
+
+// 批量删除
+let ids: any = reactive([])
+const doMutiDelete = async () => {
+  ids = []
+  // 获取被选行内容
+  const elTableExpose: any = await getElTableExpose()
+  elTableExpose.getSelectionRows().map((item: any) => {
+    ids.push(item.id)
+  })
+  if (ids.length > 0) {
+    ElMessageBox.confirm('是否确认删除？', '警告', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(() => {
+        handleMulDelete({ ids: ids.join(',') }).then((res: any) => {
+          if (res.success) {
+            getList()
+            useMessage('success', res.message)
+          } else {
+            useMessage('error', '删除失败')
+          }
+        })
+      })
+      .catch(() => {})
+  } else {
+    useMessage('warning', '请选择想要删除行')
+  }
+}
+
+// 弹框确认提交
+const dialogConfirm = debounce(async () => {
+  // 拿到编辑弹框示例并执行提交函数
+  const res = await edit.value.submit()
+  if (res === undefined) {
+    return
+  } else {
+    if (res) {
+      useMessage('success', res)
+      closeDialog()
+      getList()
+    } else {
+      useMessage('error', '操作失败')
+    }
+  }
+}, 200)
+
+// 以下代码为单选模式
+// const currentRow = ref() //当前选中行
+// const singleTableRef = ref<InstanceType<typeof Table>>() //表格实例
+// const handleCurrentChange = async (val) => {
+//   currentRow.value = val
+//   const elTableExpose: any = await getElTableExpose()
+//   elTableExpose.toggleRowSelection(val, undefined)
+// }
+
+/**
+ * 方法和变量声明统一写到上方
+ * 方法调用统一写到下方
+ */
+
+// 生命周期函数，组件加载完成后
+onMounted(() => {})
+</script>
+
+<template>
+  <div class="h-100% p-10px">
+    <!-- 搜索组件，该组件配置如下即可，不需改变 -->
+    <Search
+      :schema="searchSchema"
+      isCol
+      expand-field="content"
+      @search="setSearchParams"
+      @reset="setSearchParams"
+    />
+    <div class="p-15px pb0 el-card">
+      <!-- 表格组件，该组件配置如下即可，不需改变 -->
+      <Table
+        ref="singleTableRef"
+        v-model:pageSize="pageSize"
+        v-model:currentPage="currentPage"
+        :columns="allSchemas.tableColumns"
+        :data="dataList"
+        :loading="loading"
+        :pagination="{
+          total: total
+        }"
+        sortable
+        showAction
+        highlight-current-row
+        :border="false"
+        :showOverflowTooltip="true"
+        @register="tableRegister"
+        @refresh="refresh"
+      >
+        <template #buttonSlot>
+          <!-- 表格左上角按钮，可根据实际情况进行修改 -->
+          <tableTitle>
+              <BaseButton type="primary" v-actPermission="permissionCode.ADD" @click="btnAction({}, '新增')">{{
+                  t('exampleDemo.add')
+                }}
+              </BaseButton>
+              <BaseButton type="primary" v-actPermission="permissionCode.IMPORT" @click="doUpload">导入</BaseButton>
+              <BaseButton type="primary" v-actPermission="permissionCode.EXPORT" @click="doExport">导出</BaseButton>
+              <BaseButton type="primary" v-actPermission="permissionCode.MUTIDELETE" @click="btnAction({}, '批量删除')">批量删除</BaseButton>
+          </tableTitle>
+        </template>
+      </Table>
+    </div>
+    <!-- 弹框组件，可设置最大宽高，其他配置可不变 -->
+    <Dialog
+      :maxWidth="dialogTitle !== '详情' ? 520 : 520"
+      maxHeight="auto"
+      v-model="dialogVisible"
+      :title="dialogTitle"
+    >
+      <!-- 弹框根据不同条件分别渲染编辑表单和详情表单 -->
+      <Edit v-if="dialogTitle !== '详情'" ref="edit" />
+      <Detail v-else ref="detail" />
+      <!-- 弹框右下角按钮部分 -->
+      <template #footer>
+        <BaseButton v-if="dialogTitle !== '详情'" type="primary" @click="dialogConfirm">
+          确定
+        </BaseButton>
+        <BaseButton @click="closeDialog">{{ t('dialogDemo.close') }}</BaseButton>
+      </template>
+    </Dialog>
+    <!-- 导入导出组件，配置不需改变 -->
+    <Import
+      v-model="importVisible"
+      :title="importTitle"
+      @get-template="getFile"
+      @upload-file="fileUpload"
+      :importExplain="importExplain"
+    />
+  </div>
+</template>
+
+<style lang="less" scoped></style>

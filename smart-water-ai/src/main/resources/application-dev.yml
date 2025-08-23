@@ -1,0 +1,132 @@
+#配置启动端口
+server:
+  port: 8222
+  servlet:
+    context-path: /smartwaterai
+
+spring:
+  application:
+    name: SmartWaterAI
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  resource:
+    static-locations: classpath:/static/,classpath:/public/
+
+  #动态数据源
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          driver-class-name: org.postgresql.Driver
+          url: jdbc:postgresql://10.0.15.28:5432/smartwater_ai
+          username: postgres
+          password: Data@2025
+#          url: jdbc:sqlserver://10.0.15.28:1433;DatabaseName=DB_CITY_WATERLOGGING
+#          username: sysql
+#          password: Data@2024
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 10.0.15.26:8848
+        name-space: fusionhubxv1
+        group: http11
+        username: nacos
+        password: nacos@hanwei#2025
+
+
+  data:
+    redis:
+      prefix: ai_   #各个业务系统得缓存key前缀，用于区分不同系统的缓存数据
+      database: 10           # Redis服务器数据库
+      host: 10.0.15.26    # Redis服务器地址
+      port: 6379            # Redis服务器连接端口
+      password: zhsw#2024      # Redis服务器连接密码（默认为空）
+      timeout: 6000ms       # 连接超时时间（毫秒）
+      jedis:
+        pool:
+          max-active: 200   # 连接池最大连接数（使用负值表示没有限制）
+          max-wait: -1      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-idle: 10      # 连接池中的最大空闲连接
+          min-idle: 0       # 连接池中的最小空闲连接
+
+knife4j:
+  # 开启增强配置
+  enable: true
+  # 标识是否生产环境：true-生产环境关闭文档，false-显示文档
+  production: false
+
+mybatis-plus:
+  mapper-locations: classpath*:com/hanwei/**/xml/*Mapper.xml
+  global-config:
+    # 关闭MP3.0自带的banner
+    banner: false
+    db-config:
+      #主键类型  0:"数据库ID自增",1:"该类型为未设置主键类型", 2:"用户输入ID",3:"全局唯一ID (数字类型唯一ID)", 4:"全局唯一ID UUID",5:"字符串全局唯一ID (idWorker 的字符串表示)";
+      id-type: ASSIGN_ID
+      # 默认数据库表下划线命名
+      table-underline: true
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 返回类型为Map,显示null对应的字段
+    call-setters-on-nulls: true
+
+excel:
+  batchSaveCount: 100
+
+autoApi:
+  # 自动生成API配置，默认关闭 开启后启动时自动注册API到网关
+  enable: false
+  # 扫描的包路径，默认是当前项目路径下的com.hanwei包下所有类
+  packageScanPath: com.hanwei
+  # 网关地址
+  gatewayAddress: 10.0.51.35
+  # 网关端口
+  gatewayPort: 9080
+  # 调用网关的环境 -TEST 测试 -PRE 准生产环境 -RELEASE 生产环境
+  env: -TEST
+  #用户票
+  ticket: eyJraWQiOiI3MjRjYzc4ZC1jYTFjLTRiYWMtOGMwNi1lM2U1Y2MxMWZiMDIiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmdXNpb25odWJ4IiwiYXVkIjoiYXBpMTU2NWY0MGU5YzRiNWRjNiIsIm5iZiI6MTc1MjE5NDMyMSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSJdLCJpc3MiOiJodHRwOi8vMTAuMC4xNS40MDo4MDAxL2F1dGhsaW5rIiwiZGVwdElkIjoiMTA1Mjc0N2MtZTY5Ny00ZmEyLTk5MzEtNjZiZmM0N2ZmNGQ5IiwiZXhwIjoxNzUyMjgwNzIxLCJpYXQiOjE3NTIxOTQzMjEsImp0aSI6IjUzZjU3M2NlLTQ0MjktNDY5Ni1hMzdjLTc1N2I2ZmRlYTdlNSJ9.2KpxPPJSmvmXBV8wnCUgQjnLDtrcXvpBhD0lreEc87jA2PKh0_aF8hCsxaNK32buu0SJbFoNF8Y9j0yeJzJfRU7J7Ikr6WUOs2vY5EqQnbEaexd5ZZDb1Ihf04wLpu3ikcc7QyIUsIiPOji6355g2rpGkY7O4LSIwn5eaxQdEqscUJlQLS3qqlXOSIakcvGa1hgx2I3cwDFEmqWeeqU5txDBkC60MwhgEGJv7HQBymkuKOc5tTWRPUaAs6upc0beNwqK_GHSffkCYPb0TAparSyOKFKYS-20ozd3AMJoa30hOd_rSdD23xKK2dml5pFYcM4xEkXTlYzT-vjdvm3-Sg
+
+yanjiuyuan:
+  urlPrefix: http://ailma.ai-test.xiangyuniot.com
+
+#华为SIS语音转换服务
+sis:
+  # 认证用的ak和sk硬编码到代码中或者明文存储都有很大的安全风险，建议在配置文件或者环境变量中密文存放，使用时解密，确保安全；
+  ak: FXTBY3B4CV8VOLAMRUEP
+  sk: uH9WdEOBWBXGnD7DvSjCLuwAzol3y5yioTy5rxw8
+  #区域
+  region: cn-north-4
+  #项目id 登录管理控制台，鼠标移动到右上角的用户名上，在下拉列表中选择我的凭证，在项目列表中查看项目id。多项目时，展开“所属区域”，从“项目ID”列获取子项目ID。
+  projectId: 58abd68d3efb49f9a1082d03cbdc96dd
+  #音频格式，如pcm16k16bit
+  audioFormat: pcm16k16bit
+  #属性字符串，language_sampleRate_domain，16模型推荐使用chinese_16k_general
+  property: chinese_16k_general
+  #热词表ID
+  vocabularyId: a677b8ab-bb0e-4d6a-8678-d2c8052f19b1
+
+#模型相关配置
+#模型选择，NO_MODEL：不使用模型
+#COMPANY_MODEL：集团研究院模型
+model:
+  controller:
+    choice: NO_MODEL
+
+#数字人相关配置
+DigitalHuman:
+  appId: i-qkam5etr720pv
+  appKey: hsfa0tqw2zpvejgjx9ev
+  #小时数
+  expireTime: 1
+
+file-server:
+  # root-path 请使用'/'作为路径分隔符
+  # 更新文件接口
+  update: http://10.0.15.40:9008/file/updateRelation
+  # 文件查询接口
+  list: http://10.0.15.40:9008/file/getFileList

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.hanwei</groupId>
+    <artifactId>SmartWaterAIBase</artifactId>
+    <version>1.0</version>
+    <name>SmartWaterAIBase</name>
+    <description>SmartWaterAIBase</description>
+    <!-- 父模块打包类型必须为pom -->
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>17</java.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <mybatis.plus.spring.boot3.starter.version>3.5.5</mybatis.plus.spring.boot3.starter.version>
+        <mybatis-plus-join.version>1.4.7</mybatis-plus-join.version>
+        <dynamic-datasource-spring-boot3-starter.version>4.2.0</dynamic-datasource-spring-boot3-starter.version>
+        <knife4j-openapi3-jakarta-spring-boot-starter.version>4.3.0</knife4j-openapi3-jakarta-spring-boot-starter.version>
+        <fastjson.version>1.2.83</fastjson.version>
+
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    </properties>
+
+    <!-- 模块说明：这里声明多个子模块 -->
+    <modules>
+        <module>base-core</module>
+        <module>smart-water-ai</module>
+    </modules>
+
+    <dependencies>
+        <!--集成springmvc框架并实现自动配置 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>${mybatis.plus.spring.boot3.starter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.yulichang</groupId>
+            <artifactId>mybatis-plus-join</artifactId>
+            <version>${mybatis-plus-join.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <version>2023.0.1.0</version>
+        </dependency>
+
+
+        <!-- 动态数据源 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <version>${dynamic-datasource-spring-boot3-starter.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.undertow</groupId>
+                    <artifactId>undertow-websockets-jsr</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Knife4j -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>${knife4j-openapi3-jakarta-spring-boot-starter.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- 打包跳过测试 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>cn.smallbun.screw</groupId>-->
+<!--                <artifactId>screw-maven-plugin</artifactId>-->
+<!--                <version>1.0.5</version>-->
+<!--                <dependencies>-->
+<!--                    &lt;!&ndash; HikariCP &ndash;&gt;-->
+<!--                    <dependency>-->
+<!--                        <groupId>com.zaxxer</groupId>-->
+<!--                        <artifactId>HikariCP</artifactId>-->
+<!--                        <version>3.4.5</version>-->
+<!--                    </dependency>-->
+<!--                    &lt;!&ndash;db driver&ndash;&gt;-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.postgresql</groupId>-->
+<!--                        <artifactId>postgresql</artifactId>-->
+<!--                        &lt;!&ndash;注意：版本一定要选42.2.11，否则会出错&ndash;&gt;-->
+<!--                        <version>42.2.11</version>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash;username&ndash;&gt;-->
+<!--                    <username>postgres</username>-->
+<!--                    &lt;!&ndash;password&ndash;&gt;-->
+<!--                    <password>Data@2025</password>-->
+<!--                    &lt;!&ndash;driver&ndash;&gt;-->
+<!--                    <driverClassName>org.postgresql.Driver</driverClassName>-->
+<!--                    &lt;!&ndash;jdbc url&ndash;&gt;-->
+<!--                    <jdbcUrl>jdbc:postgresql://10.0.15.28:5432/smartwater_ai</jdbcUrl>-->
+<!--                    &lt;!&ndash;生成文件类型&ndash;&gt;-->
+<!--                    <fileType>WORD</fileType>-->
+<!--                    &lt;!&ndash;打开文件输出目录&ndash;&gt;-->
+<!--                    <openOutputDir>true</openOutputDir>-->
+<!--                    &lt;!&ndash;生成模板&ndash;&gt;-->
+<!--                    <produceType>freemarker</produceType>-->
+<!--                    &lt;!&ndash;文档名称 为空时:将采用[数据库名称-描述-版本号]作为文档名称&ndash;&gt;-->
+<!--                    <fileName>测试文档名称</fileName>-->
+<!--                    &lt;!&ndash;描述&ndash;&gt;-->
+<!--                    <description>数据库文档生成</description>-->
+<!--                    &lt;!&ndash;版本&ndash;&gt;-->
+<!--                    <version>${project.version}</version>-->
+<!--                    &lt;!&ndash;标题&ndash;&gt;-->
+<!--                    <title>数据库文档</title>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>run</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.json</include>
+                    <include>**/*.ftl</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+</project>

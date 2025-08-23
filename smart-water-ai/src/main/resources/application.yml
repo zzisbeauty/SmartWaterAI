@@ -1,0 +1,4 @@
+#配置启动配置文件环境
+spring:
+  profiles:
+    active: dev
