@@ -33,7 +33,7 @@ public interface IModelBaseService {
 
     /**
      * 创建知识库
-     *
+     * 接口参数
      * @param ragName
      * @return
      */
@@ -135,7 +135,6 @@ public interface IModelBaseService {
 
     /**
      * 知识库文件状态切换
-     *
      * @param docId
      * @param status
      * @return
@@ -154,7 +153,8 @@ public interface IModelBaseService {
 
     /**
      * 知识库文件删除
-     *
+     * 水务此接口说明文档：
+     *    1.删除的文档都必须在一个db id中，因为程序内部要根据某个的doc id获取db id，水务此接口需要此db id，因此程序内部会去查询db id
      * @param docIdList
      * @return
      * @throws Exception
@@ -201,7 +201,8 @@ public interface IModelBaseService {
 
     /**
      * 设置模型
-     *
+     * 水务模型相关
+     *    目前只允许系应该 LLM、其他 rerank、embedding 暂时不要处理；其实也不是不能实现，就是 llm 是用户最常见的修改位置
      * @param largeModelName
      * @return
      * @throws Exception
@@ -212,7 +213,7 @@ public interface IModelBaseService {
 
     /**
      * 设置知识库
-     *
+     * 水务不存在此接口，直接选择知识库，直接对话
      * @param choiceRagBO
      * @return
      * @throws Exception

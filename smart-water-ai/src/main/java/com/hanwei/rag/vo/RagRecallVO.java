@@ -63,4 +63,21 @@ public class RagRecallVO {
      */
     @ApiParameter(name = "pageSize", description = "分页条数", location = ApiEnum.PARAMETER_LOCATION_BODY)
     private Integer pageSize;
+
+    //  ========================= 水务新增 ======================== \\
+    /**检索方法*/
+    @ApiParameter(name = "search_method", description = "检索方法", location = ApiEnum.PARAMETER_LOCATION_BODY)
+    private String search_method;
+
+    /**是否启用重排序*/
+    @ApiParameter(name = "reranking_enable", description = "是否启用重排序", location = ApiEnum.PARAMETER_LOCATION_BODY)
+    private Boolean reranking_enable;
+
+    /**是否启用相似度阈值*/
+    @ApiParameter(name = "score_threshold_enabled", description = "是否启用相似度阈值", location = ApiEnum.PARAMETER_LOCATION_BODY)
+    private Boolean score_threshold_enabled;
+
+    /**返回结果数*/
+    @ApiParameter(name = "topN", description = "返回结果数", location = ApiEnum.PARAMETER_LOCATION_BODY)
+    private Integer topN;
 }

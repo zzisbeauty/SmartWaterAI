@@ -27,4 +27,20 @@ public class MessageBO {
      * 对话角色
      */
     private String role;
+
+
+    /**
+     * 用户ID - dify API 需要
+     */
+    private String user_id;
+
+    /**
+     * 知识库ID - dify API 需要
+     */
+    private String kb_id;
+
+    /**
+     * 是否流式输出 - dify API 需要
+     */
+    private Boolean streaming;
 }
