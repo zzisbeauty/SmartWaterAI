@@ -10,7 +10,6 @@ import com.hanwei.application.entity.ApplicationConfig;
 import com.hanwei.application.entity.ApplicationInfo;
 import com.hanwei.application.mapper.ApplicationInfoMapper;
 import com.hanwei.application.service.IApplicationConfigService;
-import com.hanwei.application.service.IApplicationInfoService;
 import com.hanwei.core.base.QueryGenerator;
 import com.hanwei.core.common.api.CommonAPI;
 import com.hanwei.core.common.api.vo.Result;
@@ -20,8 +19,12 @@ import com.hanwei.rag.entity.RagInfo;
 import com.hanwei.rag.mapper.RagInfoMapper;
 import com.hanwei.rag.service.IRagInfoService;
 import com.hanwei.rag.vo.RagRecallVO;
-import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
-import com.hanwei.util.yanjiuyuan.YjyResult;
+
+
+//import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
+import com.hanwei.util.shuiwu.PublicHelperFunc;
+
+
 import jakarta.servlet.ServletOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +55,9 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
     private CommonAPI commonApi;
 
     @Autowired
-    private YanjiuyuanHelper yanjiuyuanHelper;
+    private PublicHelperFunc yanjiuyuanHelper;
+    //private YanjiuyuanHelper yanjiuyuanHelper;
+
 
     @Autowired
     private IApplicationConfigService applicationConfigService;

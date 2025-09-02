@@ -29,19 +29,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-
 import cn.hutool.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import cn.hutool.json.JSONArray;
 import java.util.ArrayList;
 import cn.hutool.http.Method;
 import cn.hutool.http.HttpRequest;
@@ -56,7 +48,7 @@ import java.io.File;
  */
 @Service
 @Slf4j
-public class PublicHelper implements IModelBaseService {
+public class PublicHelperFunc implements IModelBaseService {
 
     @Value("${shuiwu.urlPrefix}")
     private String urlPrefix;
@@ -156,17 +148,17 @@ public class PublicHelper implements IModelBaseService {
         }
 
         // 直接使用 dify API 参数名的新增参数
-        paramMap.put("indexing_technique", ragInfo.getIndexing_technique() != null ?
-                ragInfo.getIndexing_technique() : "high_quality");
+        paramMap.put("indexing_technique", ragInfo.getIndexingTechnique() != null ?
+                ragInfo.getIndexingTechnique() : "high_quality");
 
         // embedding 参数映射
         paramMap.put("embedding_model_name", ragInfo.getEmbdId() != null ? ragInfo.getEmbdId() : "");
-        paramMap.put("embedding_provider_name", ragInfo.getEmbedding_provider_name() != null ?
-                ragInfo.getEmbedding_provider_name() : "");
+        paramMap.put("embedding_provider_name", ragInfo.getEmbeddingProviderName() != null ?
+                ragInfo.getEmbeddingProviderName() : "");
 
         // 检索参数映射
-        paramMap.put("search_method", ragInfo.getSearch_method() != null ?
-                ragInfo.getSearch_method() : "hybrid_search");
+        paramMap.put("search_method", ragInfo.getSearchMethod() != null ?
+                ragInfo.getSearchMethod() : "hybrid_search");
 
         // weights 参数映射 (RagInfo.vectorSimilarityWeight → weights)
         Double weights = ragInfo.getVectorSimilarityWeight() != null ?
@@ -178,17 +170,17 @@ public class PublicHelper implements IModelBaseService {
         paramMap.put("weights", weights);
 
         // rerank 参数
-        paramMap.put("reranking_enable", ragInfo.getReranking_enable() != null ?
-                ragInfo.getReranking_enable() : false);
-        paramMap.put("reranking_model_name", ragInfo.getReranking_model_name() != null ?
-                ragInfo.getReranking_model_name() : "");
-        paramMap.put("reranking_provider_name", ragInfo.getReranking_provider_name() != null ?
-                ragInfo.getReranking_provider_name() : "");
+        paramMap.put("reranking_enable", ragInfo.getRerankingEnable() != null ?
+                ragInfo.getRerankingEnable() : false);
+        paramMap.put("reranking_model_name", ragInfo.getRerankingModelName() != null ?
+                ragInfo.getRerankingModelName() : "");
+        paramMap.put("reranking_provider_name", ragInfo.getRerankingProviderName() != null ?
+                ragInfo.getRerankingProviderName() : "");
 
         // recall/retrieval 参数映射
         paramMap.put("top_k", ragInfo.getTopN() != null ? ragInfo.getTopN() : 10);
-        paramMap.put("score_threshold_enabled", ragInfo.getScore_threshold_enabled() != null ?
-                ragInfo.getScore_threshold_enabled() : false);
+        paramMap.put("score_threshold_enabled", ragInfo.getScoreThresholdEnabled() != null ?
+                ragInfo.getScoreThresholdEnabled() : false);
         paramMap.put("score_threshold", ragInfo.getSimilarityThreshold() != null ?
                 ragInfo.getSimilarityThreshold() : 0.25);
 

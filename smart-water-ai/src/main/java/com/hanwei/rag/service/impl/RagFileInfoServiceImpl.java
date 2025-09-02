@@ -2,10 +2,8 @@ package com.hanwei.rag.service.impl;
 
 
 import cn.hutool.http.HttpResponse;
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,8 +15,10 @@ import com.hanwei.rag.mapper.RagFileInfoMapper;
 import com.hanwei.rag.service.IRagFileInfoService;
 import com.hanwei.rag.vo.FileChunkVO;
 import com.hanwei.rag.vo.RagFileListVO;
-import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
-import com.hanwei.util.yanjiuyuan.YjyResult;
+
+//import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
+import com.hanwei.util.shuiwu.PublicHelperFunc;
+
 import jakarta.servlet.ServletOutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.*;
 
 
@@ -49,7 +47,8 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
     private CommonAPI commonApi;
 
     @Autowired
-    private YanjiuyuanHelper yanjiuyuanHelper;
+    private PublicHelperFunc yanjiuyuanHelper;
+    // private YanjiuyuanHelper yanjiuyuanHelper;
 
     /**
      * 以下方法需要支持直接访问文件流（网关允许）

@@ -32,7 +32,7 @@ spring:
       discovery:
         server-addr: 10.0.15.26:8848
         name-space: fusionhubxv1
-        group: http11
+        group: http
         username: nacos
         password: nacos@hanwei#2025
 

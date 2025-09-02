@@ -9,9 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hanwei.rag.bo.MessageBO;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.ByteArrayInputStream;
@@ -32,7 +30,7 @@ public class TestMain {
 
     public static void main(String[] args) {
         System.out.println("=== Shuiwu 接口测试入口 ===");
-        PublicHelper publicHelper = new PublicHelper();
+        PublicHelperFunc publicHelper = new PublicHelperFunc();
         publicHelper.setUrlPrefix("http://10.0.15.21:5627/hanwei/v1");
         publicHelper.setBearerToken("dataset-T2Hi8kmyqQCMmh6ZEtwOV2Xt");
         publicHelper.setFileUploadUrlPrefix("http://10.30.30.97:8080/v1/datasets");
@@ -68,7 +66,7 @@ public class TestMain {
     /**
      * 测试创建知识库接口
      */
-    private static void testAddRagInfo(PublicHelper publicHelper) {
+    private static void testAddRagInfo(PublicHelperFunc publicHelper) {
         System.out.println("\n开始测试 PublicHelper.addRagInfo 方法...");
 
         try {
@@ -99,7 +97,7 @@ public class TestMain {
     }
 
 
-    private static void testEditRagInfo(PublicHelper publicHelper) {
+    private static void testEditRagInfo(PublicHelperFunc publicHelper) {
         System.out.println("\n开始测试 PublicHelper.editRagInfo 方法...");
 
         try {
@@ -108,18 +106,18 @@ public class TestMain {
             ragInfo.setId("cf767ccf-7127-47ba-8cd3-71da36ff829d"); // 需要使用实际存在的知识库ID
             ragInfo.setName(""); // 可选，空值
             ragInfo.setDescription(""); // 可选，空值
-            ragInfo.setIndexing_technique("high_quality");
+            ragInfo.setIndexingTechnique("high_quality");
             ragInfo.setEmbdId("");
-            ragInfo.setEmbedding_provider_name("");  // 目前 python 接口内部指定了模型，因为本地只有一个 embedding，因此这里是空没事
-            ragInfo.setSearch_method("hybrid_search");
+            ragInfo.setEmbeddingProviderName("");  // 目前 python 接口内部指定了模型，因为本地只有一个 embedding，因此这里是空没事
+            ragInfo.setSearchMethod("hybrid_search");
             ragInfo.setVectorSimilarityWeight(0.8);
             ragInfo.setTopN(15);
             ragInfo.setSimilarityThreshold(0.66);
-            ragInfo.setScore_threshold_enabled(false);
-            ragInfo.setReranking_enable(false);
-            ragInfo.setReranking_mode("weight_score");
-            ragInfo.setReranking_model_name("");
-            ragInfo.setReranking_provider_name("");
+            ragInfo.setScoreThresholdEnabled(false);
+            ragInfo.setRerankingEnable(false);
+            ragInfo.setRerankingMode("weight_score");
+            ragInfo.setRerankingModelName("");
+            ragInfo.setRerankingProviderName("");
 
             Result result = publicHelper.editRagInfo(ragInfo);
 
@@ -146,7 +144,7 @@ public class TestMain {
     /**
      * 测试删除知识库接口
      */
-    private static void testDeleteRagInfo(PublicHelper publicHelper) {
+    private static void testDeleteRagInfo(PublicHelperFunc publicHelper) {
         System.out.println("\n开始测试 PublicHelper.deleteRagInfo 方法...");
 
         try {
@@ -180,7 +178,7 @@ public class TestMain {
     /**
      * 测试获取知识库列表接口
      */
-    private static void testGetRagInfoList(PublicHelper publicHelper) {
+    private static void testGetRagInfoList(PublicHelperFunc publicHelper) {
         System.out.println("\n开始测试 PublicHelper.getRagInfoList 方法...");
 
         try {
@@ -216,7 +214,7 @@ public class TestMain {
     /**
      * 测试获取知识库详情接口
      */
-    private static void testGetRagInfoDetail(PublicHelper publicHelper) {
+    private static void testGetRagInfoDetail(PublicHelperFunc publicHelper) {
         System.out.println("\n开始测试 PublicHelper.getRagInfoDetail 方法...");
 
         try {
@@ -249,7 +247,7 @@ public class TestMain {
     /**
      * 测试知识库召回接口
      */
-    private static void testRagRecall(PublicHelper publicHelper) {
+    private static void testRagRecall(PublicHelperFunc publicHelper) {
         System.out.println("\n开始测试 PublicHelper.ragRecall 方法...");
 
         try {
@@ -286,7 +284,7 @@ public class TestMain {
     /**
      * 测试文件上传接口
      */
-    private static void testRagFileUpload(PublicHelper publicHelper) {
+    private static void testRagFileUpload(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试直接上传文件到知识库 ---");
         String testKbId = "7cfa0b54-452e-4ce0-8d5c-a71fff0bc027";
         String testFilePath = "E:\\manager\\数据相关\\data-demodata\\从百草园到三味书屋.txt";
@@ -365,7 +363,7 @@ public class TestMain {
     /**
      * 测试获取知识库文件列表接口
      */
-    private static void testGetRagFileList(PublicHelper publicHelper) {
+    private static void testGetRagFileList(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试获取知识库文件列表 ---");
         try {
             // 测试参数
@@ -396,7 +394,7 @@ public class TestMain {
     /**
      * 测试文档状态切换接口
      */
-    private static void testRagFileSwitch(PublicHelper publicHelper) {
+    private static void testRagFileSwitch(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试文档状态切换 ---");
         try {
             String testDocId = "550b8df8-e200-4439-b38c-6b982e4256ac";
@@ -416,7 +414,7 @@ public class TestMain {
 
 
     // 测试通过文档ID获取知识库ID接口
-    private static void testGetKbIdByDocumentId(PublicHelper publicHelper) {
+    private static void testGetKbIdByDocumentId(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试通过文档ID获取知识库ID ---");
         try {
             // 测试参数 - 使用一个实际存在的文档ID # 92e25c68-ab36-4727-8ab2-a7fbba9c40a3
@@ -445,7 +443,7 @@ public class TestMain {
     /**
      * 测试文件下载接口
      */
-    private static void testDownLoadRagFile(PublicHelper publicHelper) {
+    private static void testDownLoadRagFile(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试文件下载 ---");
         try {
             // 测试参数 - 使用实际的文档ID
@@ -482,7 +480,7 @@ public class TestMain {
     /**
      * 测试删除文档接口
      */
-    private static void testDeleteRagFile(PublicHelper publicHelper) {
+    private static void testDeleteRagFile(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试删除文档 ---");
         try {
             // 测试参数 - 单个文档删除 - 转化成了 doc id list
@@ -513,7 +511,7 @@ public class TestMain {
     /**
      * 测试获取文档分段列表接口
      */
-    private static void testGetDocumentSlicingList(PublicHelper publicHelper) {
+    private static void testGetDocumentSlicingList(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试获取文档分段列表 ---");
 
         try {
@@ -550,7 +548,7 @@ public class TestMain {
     /**
      * 测试文档分段状态切换接口
      */
-    private static void testDocumentSlicingStatusSwitch(PublicHelper publicHelper) {
+    private static void testDocumentSlicingStatusSwitch(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试文档分段状态切换 ---");
         try {
             // 测试参数
@@ -583,7 +581,7 @@ public class TestMain {
     /**
      * 测试获取模型列表接口
      */
-    private static void testGetLargeModelList(PublicHelper publicHelper) {
+    private static void testGetLargeModelList(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试获取模型列表 ---");
 
         try {
@@ -612,7 +610,7 @@ public class TestMain {
     /**
      * 测试设置默认模型接口
      */
-    private static void testChoiceLargeModel(PublicHelper publicHelper) {
+    private static void testChoiceLargeModel(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试设置默认模型 ---");
 
         try {
@@ -647,7 +645,7 @@ public class TestMain {
     /**
      * 测试第一轮对话接口
      */
-    private static void testModelDialogue(PublicHelper publicHelper) {
+    private static void testModelDialogue(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试第一轮模型对话 ---");
 
         try {

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TestShuiwuInterface implements CommandLineRunner {
     @Autowired
-    private PublicHelper publicHelper;
+    private PublicHelperFunc publicHelper;
 
     @Override
     public void run(String... args) throws Exception {

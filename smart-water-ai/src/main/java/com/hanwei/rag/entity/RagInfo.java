@@ -2,9 +2,9 @@ package com.hanwei.rag.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.alibaba.excel.annotation.format.NumberFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -162,48 +162,56 @@ public class RagInfo {
     @Schema(description = "索引技术")
     @ExcelProperty("索引技术")
     @ApiParameter(name = "indexing_technique", description = "索引技术", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private String indexing_technique;
+    @TableField(exist = false)
+    private String indexingTechnique;
 
     /**embedding提供商*/
     @Schema(description = "embedding提供商")
     @ExcelProperty("embedding提供商")
     @ApiParameter(name = "embedding_provider_name", description = "embedding提供商", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private String embedding_provider_name;
+    @TableField(exist = false)
+    private String embeddingProviderName;
 
     /**检索方法*/
     @Schema(description = "检索方法")
     @ExcelProperty("检索方法")
     @ApiParameter(name = "search_method", description = "检索方法", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private String search_method;
+    @TableField(exist = false)
+    private String searchMethod;
 
     /**是否启用重排序*/
     @Schema(description = "是否启用重排序")
     @ExcelProperty("是否启用重排序")
     @ApiParameter(name = "reranking_enable", description = "是否启用重排序", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private Boolean reranking_enable;
+    @TableField(exist = false)
+    private Boolean rerankingEnable;
 
     /**重排序模式*/
     @Schema(description = "重排序模式")
     @ExcelProperty("重排序模式")
     @ApiParameter(name = "reranking_mode", description = "重排序模式", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private String reranking_mode;
+    @TableField(exist = false)
+    private String rerankingMode;
 
     /**重排序模型名称*/
     @Schema(description = "重排序模型名称")
     @ExcelProperty("重排序模型名称")
     @ApiParameter(name = "reranking_model_name", description = "重排序模型名称", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private String reranking_model_name;
+    @TableField(exist = false)
+    private String rerankingModelName;
 
     /**重排序提供商*/
     @Schema(description = "重排序提供商")
     @ExcelProperty("重排序提供商")
     @ApiParameter(name = "reranking_provider_name", description = "重排序提供商", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private String reranking_provider_name;
+    @TableField(exist = false)
+    private String rerankingProviderName;
 
     /**是否启用相似度阈值*/
     @Schema(description = "是否启用相似度阈值")
     @ExcelProperty("是否启用相似度阈值")
     @ApiParameter(name = "score_threshold_enabled", description = "是否启用相似度阈值", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private Boolean score_threshold_enabled;
+    @TableField(exist = false)
+    private Boolean scoreThresholdEnabled;
 
 }

@@ -15,7 +15,7 @@ public class TestMainV3 {
 
         try {
             // 通过 Spring 容器获取 PublicHelper 实例
-            PublicHelper publicHelper = SpringContextUtils.getBean(PublicHelper.class);
+            PublicHelperFunc publicHelper = SpringContextUtils.getBean(PublicHelperFunc.class);
 
             // 调用各个测试方法
             testAddRagInfo(publicHelper);
@@ -37,7 +37,7 @@ public class TestMainV3 {
     /**
      * 测试创建知识库接口
      */
-    private static void testAddRagInfo(PublicHelper publicHelper) {
+    private static void testAddRagInfo(PublicHelperFunc publicHelper) {
         System.out.println("\n开始测试 PublicHelper.addRagInfo 方法...");
 
         try {

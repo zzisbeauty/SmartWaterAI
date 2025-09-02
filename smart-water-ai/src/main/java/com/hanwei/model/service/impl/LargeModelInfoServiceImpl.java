@@ -4,14 +4,6 @@ package com.hanwei.model.service.impl;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.annotation.ExcelProperty;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.read.listener.ReadListener;
-import com.alibaba.excel.support.ExcelTypeEnum;
-import com.alibaba.excel.util.ListUtils;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,7 +11,6 @@ import com.hanwei.application.entity.ApplicationConfig;
 import com.hanwei.application.entity.ApplicationInfo;
 import com.hanwei.application.mapper.ApplicationInfoMapper;
 import com.hanwei.application.service.IApplicationConfigService;
-import com.hanwei.application.service.IApplicationInfoService;
 import com.hanwei.core.base.QueryGenerator;
 import com.hanwei.core.common.api.CommonAPI;
 import com.hanwei.core.common.api.vo.Result;
@@ -28,20 +19,17 @@ import com.hanwei.model.entity.LargeModelInfo;
 import com.hanwei.model.mapper.LargeModelInfoMapper;
 import com.hanwei.model.service.ILargeModelInfoService;
 import com.hanwei.rag.bo.MessageBO;
-import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
-import com.hanwei.util.yanjiuyuan.YjyResult;
-import io.swagger.v3.oas.annotations.media.Schema;
+
+
+import com.hanwei.util.shuiwu.PublicHelperFunc;
+
+
 import jakarta.servlet.ServletOutputStream;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.util.*;
@@ -65,7 +53,8 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
     private CommonAPI commonApi;
 
     @Autowired
-    YanjiuyuanHelper yanjiuyuanHelper;
+    PublicHelperFunc yanjiuyuanHelper;
+    // YanjiuyuanHelper yanjiuyuanHelper;
 
     @Autowired
     private IApplicationConfigService applicationConfigService;
