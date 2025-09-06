@@ -75,14 +75,19 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
         QueryWrapper<RagFileInfo> queryWrapper = QueryGenerator.initQueryWrapper(ragFileInfo, paramMap);
         List<RagFileInfo> list = list(queryWrapper);
         //字典值转换
-//        List<JSON> listJson = commonApi.translateResultByDict(list);
-//        List<RagFileInfo> result = listJson.stream().map(e -> JSON.toJavaObject(e,RagFileInfo.class)).collect(Collectors.toList());
+        // List<JSON> listJson = commonApi.translateResultByDict(list);
+        // List<RagFileInfo> result = listJson.stream().map(e -> JSON.toJavaObject(e,RagFileInfo.class)).collect(Collectors.toList());
         String excelContent = null;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         EasyExcel.write(outputStream, RagFileInfo.class).sheet("知识库文档管理").doWrite(list);
         excelContent = Base64.getEncoder().encodeToString(outputStream.toByteArray());
         return excelContent;
     }
+
+
+
+
+    // =================================================================================================================
 
     /**
      * 知识库文件上传
@@ -128,7 +133,6 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
                 return Result.error(200,"调用研究院知识库文件查询失败 "+ result.getMessage());
             }
 
-
             List<RagFileInfo> list = new ArrayList<>();
             JSONObject data = (JSONObject) result.getResult();
             ragFileListVO.setTotal(data.getInt("total"));
@@ -153,20 +157,16 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
                     if(0 == parserStatus){
                         ragFileInfo.setParserStatus("未解析");
                     }
-
                     if(1 == parserStatus){
                         ragFileInfo.setParserStatus("解析中");
                     }
-
                     if(4 == parserStatus){
                         ragFileInfo.setParserStatus("解析失败");
                     }
-
                     if(3 == parserStatus){
                         ragFileInfo.setParserStatus("已解析");
                     }
                 }
-
                 Date date = new Date();
                 date.setTime(jsonObject.getLong("create_time"));
                 ragFileInfo.setCreateTime(date);
@@ -181,6 +181,141 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
         }
         return Result.ok(ragFileListVO);
     }
+
+    /**
+     * 知识库文件下载
+     * @param fileId
+     * @return
+     */
+    @Override
+    public HttpResponse downLoadRagFileByYanjiuyuan(String fileId) {
+        //调用研究院知识库文件下载
+        HttpResponse response;
+        try {
+            response = yanjiuyuanHelper.downLoadRagFile(fileId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("调用研究院知识库文件下载失败 "+ e.getMessage());
+            return null;
+        }
+        return response;
+    }
+
+    /**
+     * 知识库文件删除
+     * @param docIdLis
+     * @return
+     */
+    @Override
+    public Result<?> deleteRagFileByYanjiuyuan(List<String> docIdLis) {
+        //调用研究院知识库文件删除
+        Result result = null;
+        try {
+            result = yanjiuyuanHelper.deleteRagFile(docIdLis);
+            if(null == result || 0!=result.getCode()){
+                log.error("调用研究院知识库文件删除失败 "+ result.getMessage());
+                return Result.error(200,"调用研究院知识库文件删除失败 "+ result.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("调用研究院知识库文件删除失败 "+ e.getMessage());
+            return Result.error(200,"调用研究院知识库文件删除失败 "+ e.getMessage());
+        }
+        return Result.ok("文件删除成功");
+    }
+
+    /**
+     * 文档切片查询
+     * @param pageNo
+     * @param pageSize
+     * @param docId
+     * @param keyWord
+     * @return
+     */
+    @Override
+    public Result<?> getDocumentSlicingListByYanjiuyuan(String pageNo, String pageSize, String docId, String keyWord) {
+        //调用研究院文档切片查询
+        Result result;
+        List<FileChunkVO> fileChunkVOList = new ArrayList<>();
+        try {
+            result = yanjiuyuanHelper.getDocumentSlicingList(pageNo, pageSize, docId, keyWord);
+            if(null == result || 0!=result.getCode()){
+                log.error("调用研究院文档切片查询失败 "+ result.getMessage());
+                return Result.error(200,"调用研究院文档切片查询失败 "+ result.getMessage());
+            }
+            JSONObject jsonObject = (JSONObject) result.getResult();
+            List<JSONObject> list = jsonObject.getJSONArray("chunks").toList(JSONObject.class);
+            for(JSONObject object : list){
+                FileChunkVO fileChunkVO = new FileChunkVO();
+                fileChunkVO.setId(object.getStr("chunk_id"));
+                fileChunkVO.setContent(object.getStr("content_with_weight"));
+                fileChunkVO.setDocId(object.getStr("c8715cae630611f0b5560242ac1a0002"));
+                fileChunkVO.setDocName(object.getStr("docnm_kwd"));
+                fileChunkVO.setStatus(object.getInt("available_int"));
+                fileChunkVOList.add(fileChunkVO);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("调用研究院文档切片查询失败 "+ e.getMessage());
+            return Result.error(200,"调用研究院文档切片查询失败 "+ e.getMessage());
+        }
+        return Result.ok(fileChunkVOList);
+    }
+
+    /**
+     * 文档切片状态切换
+     * @param status
+     * @param docId
+     * @param slicingIdList
+     * @return
+     */
+    @Override
+    public Result<?> documentSlicingStatusSwitchByYanjiuyuan(Integer status, String docId, List<String> slicingIdList) {
+        //调用研究院文档切片状态切换
+        Result result = null;
+        try {
+            result = yanjiuyuanHelper.documentSlicingStatusSwitch(status, docId, slicingIdList);
+            if(null == result || 0!=result.getCode()){
+                log.error("调用研究院文档切片状态切换失败 "+ result.getMessage());
+                return Result.error(200,"调用研究院文档切片状态切换失败 "+ result.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("调用研究院文档切片状态切换失败 "+ e.getMessage());
+            return Result.error(200,"调用研究院文档切片状态切换失败 "+ e.getMessage());
+        }
+        return Result.ok("文档切片状态切换成功");
+    }
+
+    /**
+     * 知识库文件状态切换
+     * @param docId
+     * @param status
+     * @return
+     */
+    @Override
+    public Result<?> ragFileSwitch(String docId, Integer status) {
+        //调用研究院文档状态切换
+        Result result = null;
+        try {
+            result = yanjiuyuanHelper.ragFileSwitch(docId, status);
+            if(null == result || 0!=result.getCode()){
+                log.error("调用研究院文档状态切换失败 "+ result.getMessage());
+                return Result.error(200,"调用研究院文档切片状态切换失败 "+ result.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("调用研究院文档切片状态切换失败 "+ e.getMessage());
+            return Result.error(200,"调用研究院文档状态切换失败 "+ e.getMessage());
+        }
+
+        return Result.ok("文档状态切换成功");
+    }
+
+
+
+
+    // ============================= 暂缺实现 =================================== \\
 
     /**
      * 知识库文件解析
@@ -213,142 +348,6 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
         }else{
             message = "操作成功";
         }
-
         return Result.ok(message);
-    }
-
-    /**
-     * 知识库文件下载
-     * @param fileId
-     * @return
-     */
-    @Override
-    public HttpResponse downLoadRagFileByYanjiuyuan(String fileId) {
-        //调用研究院知识库文件下载
-        HttpResponse response;
-        try {
-            response = yanjiuyuanHelper.downLoadRagFile(fileId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("调用研究院知识库文件下载失败 "+ e.getMessage());
-            return null;
-        }
-
-        return response;
-    }
-
-    /**
-     * 知识库文件删除
-     * @param docIdLis
-     * @return
-     */
-    @Override
-    public Result<?> deleteRagFileByYanjiuyuan(List<String> docIdLis) {
-        //调用研究院知识库文件删除
-        Result result = null;
-        try {
-            result = yanjiuyuanHelper.deleteRagFile(docIdLis);
-            if(null == result || 0!=result.getCode()){
-                log.error("调用研究院知识库文件删除失败 "+ result.getMessage());
-                return Result.error(200,"调用研究院知识库文件删除失败 "+ result.getMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("调用研究院知识库文件删除失败 "+ e.getMessage());
-            return Result.error(200,"调用研究院知识库文件删除失败 "+ e.getMessage());
-        }
-
-        return Result.ok("文件删除成功");
-    }
-
-    /**
-     * 文档切片查询
-     * @param pageNo
-     * @param pageSize
-     * @param docId
-     * @param keyWord
-     * @return
-     */
-    @Override
-    public Result<?> getDocumentSlicingListByYanjiuyuan(String pageNo, String pageSize, String docId, String keyWord) {
-        //调用研究院文档切片查询
-        Result result;
-        List<FileChunkVO> fileChunkVOList = new ArrayList<>();
-        try {
-            result = yanjiuyuanHelper.getDocumentSlicingList(pageNo, pageSize, docId, keyWord);
-            if(null == result || 0!=result.getCode()){
-                log.error("调用研究院文档切片查询失败 "+ result.getMessage());
-                return Result.error(200,"调用研究院文档切片查询失败 "+ result.getMessage());
-            }
-
-            JSONObject jsonObject = (JSONObject) result.getResult();
-            List<JSONObject> list = jsonObject.getJSONArray("chunks").toList(JSONObject.class);
-            for(JSONObject object : list){
-                FileChunkVO fileChunkVO = new FileChunkVO();
-                fileChunkVO.setId(object.getStr("chunk_id"));
-                fileChunkVO.setContent(object.getStr("content_with_weight"));
-                fileChunkVO.setDocId(object.getStr("c8715cae630611f0b5560242ac1a0002"));
-                fileChunkVO.setDocName(object.getStr("docnm_kwd"));
-                fileChunkVO.setStatus(object.getInt("available_int"));
-                fileChunkVOList.add(fileChunkVO);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("调用研究院文档切片查询失败 "+ e.getMessage());
-            return Result.error(200,"调用研究院文档切片查询失败 "+ e.getMessage());
-        }
-
-        return Result.ok(fileChunkVOList);
-    }
-
-    /**
-     * 文档切片状态切换
-     * @param status
-     * @param docId
-     * @param slicingIdList
-     * @return
-     */
-    @Override
-    public Result<?> documentSlicingStatusSwitchByYanjiuyuan(Integer status, String docId, List<String> slicingIdList) {
-        //调用研究院文档切片状态切换
-        Result result = null;
-        try {
-            result = yanjiuyuanHelper.documentSlicingStatusSwitch(status, docId, slicingIdList);
-            if(null == result || 0!=result.getCode()){
-                log.error("调用研究院文档切片状态切换失败 "+ result.getMessage());
-                return Result.error(200,"调用研究院文档切片状态切换失败 "+ result.getMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("调用研究院文档切片状态切换失败 "+ e.getMessage());
-            return Result.error(200,"调用研究院文档切片状态切换失败 "+ e.getMessage());
-        }
-
-        return Result.ok("文档切片状态切换成功");
-    }
-
-    /**
-     * 知识库文件切换
-     * @param docId
-     * @param status
-     * @return
-     */
-    @Override
-    public Result<?> ragFileSwitch(String docId, Integer status) {
-        //调用研究院文档状态切换
-        Result result = null;
-        try {
-            result = yanjiuyuanHelper.ragFileSwitch(docId, status);
-            if(null == result || 0!=result.getCode()){
-                log.error("调用研究院文档状态切换失败 "+ result.getMessage());
-                return Result.error(200,"调用研究院文档切片状态切换失败 "+ result.getMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("调用研究院文档切片状态切换失败 "+ e.getMessage());
-            return Result.error(200,"调用研究院文档状态切换失败 "+ e.getMessage());
-        }
-
-        return Result.ok("文档状态切换成功");
     }
 }

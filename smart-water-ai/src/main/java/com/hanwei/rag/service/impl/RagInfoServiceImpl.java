@@ -1,6 +1,8 @@
 package com.hanwei.rag.service.impl;
 
 
+import java.util.ArrayList;
+
 import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -56,8 +58,7 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
 
     @Autowired
     private PublicHelperFunc yanjiuyuanHelper;
-    //private YanjiuyuanHelper yanjiuyuanHelper;
-
+    // private YanjiuyuanHelper yanjiuyuanHelper;
 
     @Autowired
     private IApplicationConfigService applicationConfigService;
@@ -90,8 +91,8 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
         QueryWrapper<RagInfo> queryWrapper = QueryGenerator.initQueryWrapper(ragInfo, paramMap);
         List<RagInfo> list = list(queryWrapper);
         //字典值转换
-//        List<JSON> listJson = commonApi.translateResultByDict(list);
-//        List<RagInfo> result = listJson.stream().map(e -> JSON.toJavaObject(e,RagInfo.class)).collect(Collectors.toList());
+        // List<JSON> listJson = commonApi.translateResultByDict(list);
+        // List<RagInfo> result = listJson.stream().map(e -> JSON.toJavaObject(e,RagInfo.class)).collect(Collectors.toList());
         String excelContent = null;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         EasyExcel.write(outputStream, RagInfo.class).sheet("知识库基础信息管理").doWrite(list);
@@ -99,11 +100,16 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
         return excelContent;
     }
 
+
+
+
+    // =================================================================================================================
+
     /**
      * 保存知识库数据
      * @param ragInfo
      * @return
-     */
+    */
     @Override
     public Result<?> saveRagInfo(RagInfo ragInfo) {
         //调用研究院知识库保存
@@ -113,6 +119,8 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
             if(null == result || 0!=result.getCode()){
                 log.error("调用研究院新增知识库失败 "+ result.getMessage());
                 return Result.error(200,"调用研究院新增知识库失败 "+ result.getMessage());
+            } else {
+                log.info("调用研究院新增知识库成功 "+ result.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,9 +128,13 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
             return Result.error(200,"调用研究院新增知识库失败 "+ e.getMessage());
         }
 
+        // 添加日志打印，查看研究原始返回结构，确认方便水务和这个结构对齐
+        log.info("研究院 API 返回的原始 result 对象: " + result);
+        log.info("研究院 API 返回的 result.getResult() 内容: " + result.getResult());
+        log.info("研究院 API 返回的 result.getResult() 类型: " + (result.getResult() != null ? result.getResult().getClass().getName() : "null"));
+
         JSONObject jsonObject = (JSONObject) result.getResult();
         String yjyRagId = jsonObject.getStr("kb_id");
-
         //保存 对一些参数设置默认值
         ragInfo.setChunkNum(0);
         ragInfo.setId(yjyRagId);
@@ -135,13 +147,12 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
         ragInfo.setSimilarityThreshold(0.2);
         ragInfo.setVectorSimilarityWeight(0.3);
         ragInfo.setTopN(8);
-
         save(ragInfo);
         return Result.ok("保存成功");
     }
 
     /**
-     * 更新知识库数据
+     * 更新知识库数据 | 原来的更新
      * @param ragInfo
      * @return
      */
@@ -159,8 +170,6 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
             log.error("调用研究院更新知识库失败 "+ e.getMessage());
             return Result.error(200,"调用研究院更新知识库失败 "+ e.getMessage());
         }
-
-        //更新数据库
         updateById(ragInfo);
         return Result.ok("更新成功");
     }
@@ -197,12 +206,9 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
             log.error("调用研究院删除知识库失败 "+ e.getMessage());
             return Result.error(200,"调用研究院删除知识库失败 "+ e.getMessage());
         }
-
-        //删除知识库
         removeById(id);
         return Result.ok("删除成功");
     }
-
 
     /**
      * 知识库召回测试
@@ -220,52 +226,18 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
                 log.error("调用研究院知识库召回测试失败 "+ result.getMessage());
                 return Result.error(200,"调用研究院知识库召回测试失败 "+ result.getMessage());
             }
-
-
             JSONObject jsonObject = (JSONObject) result.getResult();
             ragRecallBO.setChunkList(jsonObject.getJSONArray("chunks").toList(String.class));
             ragRecallBO.setDocAggs(jsonObject.getJSONArray("doc_aggs").toList(String.class));
             ragRecallBO.setLabels(jsonObject.getStr("labels"));
             ragRecallBO.setTotal(jsonObject.getInt("total"));
-
-
         } catch (Exception e) {
             e.printStackTrace();
             log.error("调用研究院知识库召回测试失败 "+ e.getMessage());
             return Result.error("调用研究院知识库召回测试失败 "+ e.getMessage());
         }
         //组装返回前端VO
-
         return Result.ok(ragRecallBO);
-    }
-
-
-    /**
-     * 获取知识库知识图谱
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public Result<?> getRagGraph(String id) {
-
-        //调用研究院获取图谱数据
-        Result result = null;
-
-        try {
-            result = yanjiuyuanHelper.getRagGraphInfo(id);
-            if(null == result || 0!=result.getCode()){
-                log.error("调用研究院获取图谱数据失败 "+ result.getMessage());
-                return Result.error("调用研究院获取图谱数据失败 "+ result.getMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("调用研究院获取图谱数据失败 "+ e.getMessage());
-            return Result.error("调用研究院获取图谱数据失败 "+ e.getMessage());
-        }
-
-        //组装数据给前端
-        return Result.ok(result.getResult());
     }
 
     /**
@@ -277,7 +249,6 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
     public Result<?> choiceRagByYanjiuyuan(ChoiceRagBO choiceRagBO) {
         //调用设置知识库
         Result result = null;
-
         try {
             result = yanjiuyuanHelper.choiceRag(choiceRagBO);
             if(null == result || 0!=result.getCode()){
@@ -289,7 +260,33 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
             log.error("调用研究院设置知识库失败 "+ e.getMessage());
             return Result.error("调用研究院设置知识库失败 "+ e.getMessage());
         }
+        //组装数据给前端
+        return Result.ok(result.getResult());
+    }
 
+
+    // ============================= 暂缺实现 =================================== \\
+
+    /**
+     * 获取知识库知识图谱
+     * @param id
+     * @return
+     */
+    @Override
+    public Result<?> getRagGraph(String id) {
+        //调用研究院获取图谱数据
+        Result result = null;
+        try {
+            result = yanjiuyuanHelper.getRagGraphInfo(id);
+            if(null == result || 0!=result.getCode()){
+                log.error("调用研究院获取图谱数据失败 "+ result.getMessage());
+                return Result.error("调用研究院获取图谱数据失败 "+ result.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("调用研究院获取图谱数据失败 "+ e.getMessage());
+            return Result.error("调用研究院获取图谱数据失败 "+ e.getMessage());
+        }
         //组装数据给前端
         return Result.ok(result.getResult());
     }

@@ -13,6 +13,7 @@ import com.hanwei.core.base.BaseController;
 import com.hanwei.core.base.QueryGenerator;
 import com.hanwei.core.common.ApiEnum;
 import com.hanwei.core.common.api.vo.Result;
+import com.hanwei.rag.bo.DeleteDocumentRequestBO;
 import com.hanwei.rag.bo.FileParsingParamVO;
 import com.hanwei.rag.bo.RagFileSwitchBO;
 import com.hanwei.rag.entity.RagFileInfo;
@@ -117,7 +118,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 通过id删除
-     *
      * @param id
      * @return
      */
@@ -136,7 +136,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 批量删除
-     *
      * @param ids
      * @return
      */
@@ -155,7 +154,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 通过id查询
-     *
      * @param id
      * @return
      */
@@ -238,7 +236,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 研究院:文档查询
-     *
      * @param pageNo
      * @param pageSize
      * @param fileName
@@ -248,18 +245,16 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-研究院:文档查询")
     @Operation(summary = "知识库文档管理-研究院:文档查询")
     @RequestMapping(value = "/getFileListByYanjiuyuan", method = {RequestMethod.GET})
-    public Result<?> getFileListByYanjiuyuan(@RequestParam(name = "pageNo", defaultValue = "1")
-                                             @ApiParameter(name = "pageNo", description = "页码")
-                                                     String pageNo,
-                                             @RequestParam(name = "pageSize", defaultValue = "10")
-                                             @ApiParameter(name = "pageSize", description = "数量")
-                                                     String pageSize,
-                                             @RequestParam(required = false)
-                                             @ApiParameter(name = "fileName", description = "文档名称")
-                                                     String fileName,
-                                             @RequestParam
-                                             @ApiParameter(name = "ragId", description = "知识库ID")
-                                                     String ragId) {
+    public Result<?> getFileListByYanjiuyuan(
+            @RequestParam(name = "pageNo", defaultValue = "1")
+            @ApiParameter(name = "pageNo", description = "页码") String pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10")
+            @ApiParameter(name = "pageSize", description = "数量") String pageSize,
+            @RequestParam(required = false)
+            @ApiParameter(name = "fileName", description = "文档名称") String fileName,
+            @RequestParam
+            @ApiParameter(name = "ragId", description = "知识库ID") String ragId)
+    {
         return ragFileInfoService.getFileListByYanjiuyuan(pageNo, pageSize, fileName, ragId);
     }
 
@@ -298,10 +293,11 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-研究院:文档下载")
     @Operation(summary = "知识库文档管理-研究院:文档下载")
     @RequestMapping(value = "/downLoadRagFileByYanjiuyuan", method = {RequestMethod.GET})
-    public void downLoadRagFileByYanjiuyuan(@RequestParam
-                                                 @ApiParameter(name = "fileId", description = "文档ID")
-                                                         String fileId,
-                                                 HttpServletResponse httpServletResponse) {
+    public void downLoadRagFileByYanjiuyuan(
+            @RequestParam
+            @ApiParameter(name = "fileId", description = "文档ID") String fileId,
+            HttpServletResponse httpServletResponse
+    ) {
         ServletOutputStream servletOutputStream = null;
         try {
             HttpResponse httpResponse = ragFileInfoService.downLoadRagFileByYanjiuyuan(fileId);
@@ -332,28 +328,37 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
                 e.printStackTrace();
             }
         }
-
-
     }
 
     /**
      * 研究院:文档删除
-     *
      * @param docIdLis
      * @return
-     */
+     * */
     @AutoLog(value = "知识库文档管理-研究院:文档删除")
     @Operation(summary = "知识库文档管理-研究院:文档删除")
     @RequestMapping(value = "/deleteRagFileByYanjiuyuan", method = {RequestMethod.POST})
-    public Result<?> deleteRagFileByYanjiuyuan(@RequestBody
-                                               @ApiParameter(name = "docIdLis", description = "文档IDs", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                       List<String> docIdLis) {
+    public Result<?> deleteRagFileByYanjiuyuan(
+            @RequestBody
+            @ApiParameter(name = "docIdLis", description = "文档IDs", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            List<String> docIdLis) {
         return ragFileInfoService.deleteRagFileByYanjiuyuan(docIdLis);
     }
 
     /**
+    @AutoLog(value = "知识库文档管理-研究院:文档删除")
+    @Operation(summary = "知识库文档管理-研究院:文档删除")
+    @RequestMapping(value = "/deleteRagFileByYanjiuyuan", method = {RequestMethod.POST})
+    public Result<?> deleteRagFileByYanjiuyuan(@RequestBody DeleteDocumentRequestBO request) {
+        return ragFileInfoService.deleteRagFileByYanjiuyuan(request.getDocIdLis());
+    }
+    */
+
+
+
+
+    /**
      * 研究院:文档切片查询
-     *
      * @param pageNo
      * @param pageSize
      * @param docId
@@ -380,7 +385,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 研究院:文档切片状态切换
-     *
      * @param status
      * @param docId
      * @param slicingIdList

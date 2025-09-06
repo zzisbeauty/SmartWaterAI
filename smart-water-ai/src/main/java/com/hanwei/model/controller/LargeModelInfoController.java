@@ -58,14 +58,16 @@ public class LargeModelInfoController extends BaseController<LargeModelInfo, ILa
     @AutoLog(value = "大模型基础信息-分页列表查询")
     @Operation(summary = "大模型基础信息-分页列表查询")
     @RequestMapping(value = "/list", method = {RequestMethod.GET})
-    public Result<?> queryPageList(LargeModelInfo largeModelInfo,
-                                   @RequestParam(name = "pageNo", defaultValue = "1")
-                                   @ApiParameter(name = "pageNo", description = "页码", required = true, demovalue = "1", defaultvalue = "1")
-                                           Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10")
-                                   @ApiParameter(name = "pageSize", description = "每页数量", required = true, demovalue = "1", defaultvalue = "10")
-                                           Integer pageSize,
-                                   HttpServletRequest req) {
+    public Result<?> queryPageList(
+            LargeModelInfo largeModelInfo,
+            @RequestParam(name = "pageNo", defaultValue = "1")
+            @ApiParameter(name = "pageNo", description = "页码", required = true, demovalue = "1", defaultvalue = "1")
+            Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10")
+            @ApiParameter(name = "pageSize", description = "每页数量", required = true, demovalue = "1", defaultvalue = "10")
+            Integer pageSize,
+            HttpServletRequest req
+    ) {
         QueryWrapper<LargeModelInfo> queryWrapper = QueryGenerator.initQueryWrapper(largeModelInfo, req.getParameterMap());
         Page<LargeModelInfo> page = new Page<LargeModelInfo>(pageNo, pageSize);
         IPage<LargeModelInfo> pageList = largeModelInfoService.page(page, queryWrapper);
@@ -108,7 +110,6 @@ public class LargeModelInfoController extends BaseController<LargeModelInfo, ILa
             log.error(e.getMessage());
             return Result.error(200,e.getMessage());
         }
-
     }
 
     /**
@@ -126,15 +127,16 @@ public class LargeModelInfoController extends BaseController<LargeModelInfo, ILa
 
     /**
      * 通过id删除
-     *
      * @param id
      * @return
      */
     @AutoLog(value = "大模型基础信息-通过id删除")
     @Operation(summary = "大模型基础信息-通过id删除")
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
-    public Result<?> delete(@RequestParam(name = "id", required = true)
-                            @ApiParameter(name = "id", description = "ID", required = true) String id) {
+    public Result<?> delete(
+            @RequestParam(name = "id", required = true)
+            @ApiParameter(name = "id", description = "ID", required = true) String id
+    ) {
         return largeModelInfoService.deleteLargeModelInfo(id);
     }
 
@@ -148,8 +150,10 @@ public class LargeModelInfoController extends BaseController<LargeModelInfo, ILa
     @AutoLog(value = "大模型基础信息-通过id查询")
     @Operation(summary = "大模型基础信息-通过id查询")
     @GetMapping(value = "/queryById")
-    public Result<?> queryById(@RequestParam(name = "id", required = true)
-                               @ApiParameter(name = "id", description = "ID", required = true) String id) {
+    public Result<?> queryById(
+            @RequestParam(name = "id", required = true)
+            @ApiParameter(name = "id", description = "ID", required = true) String id
+    ) {
         LargeModelInfo largeModelInfo = largeModelInfoService.getById(id);
         return Result.OK(largeModelInfo);
     }
@@ -157,7 +161,6 @@ public class LargeModelInfoController extends BaseController<LargeModelInfo, ILa
     /**
      * 支持文件流的情况下直接使用该方式
      * 文件流
-     *
      * @param request
      * @param response
      * @param largeModelInfo
@@ -168,10 +171,10 @@ public class LargeModelInfoController extends BaseController<LargeModelInfo, ILa
     @RequestMapping(value = "/exportXls", method = {RequestMethod.GET})
     public Result<?> exportXls(HttpServletRequest request, HttpServletResponse response, LargeModelInfo largeModelInfo, String fileName) {
         try {
-            // 这里注意 使用swagger 会导致各种问题，请直接用浏览器或者用postman
+            // 这里注意 使用swagger 会导致各种问题，请直接用浏览器或者用 postman
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setCharacterEncoding("utf-8");
-            // URLEncoder.encode可以防止中文乱码
+            // URLEncoder.encode 可以防止中文乱码
             fileName = URLEncoder.encode(Optional.ofNullable(fileName).orElse("大模型基础信息"), "UTF-8").replaceAll("\\+", "%20");
             response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
             largeModelInfoService.exportData(response.getOutputStream(), request.getParameterMap(), largeModelInfo);
@@ -211,25 +214,39 @@ public class LargeModelInfoController extends BaseController<LargeModelInfo, ILa
     @AutoLog(value = "大模型基础信息-研究院:设置模型")
     @Operation(summary = "大模型基础信息-研究院:设置模型")
     @RequestMapping(value = "/choiceLargeModelByYanjiuyuan", method = {RequestMethod.POST})
-    public Result<?> choiceLargeModelByYanjiuyuan(@RequestBody
-                                                  @ApiParameter(name = "largeModelName", description = "模型名称", required = true, location = ApiEnum.PARAMETER_LOCATION_BODY) String largeModelName) {
+    public Result<?> choiceLargeModelByYanjiuyuan(
+            @RequestBody
+            @ApiParameter(name = "largeModelName", description = "模型名称", required = true, location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String largeModelName
+    ) {
         return largeModelInfoService.choiceLargeModelByYanjiuyuan(largeModelName);
     }
 
-    /**
+    /** 原始的方法，由于有两个请求体，因此停用该方法
      * 研究院:调用会话
-     *
-     * @param conversationId
-     * @param messageBOList
-     * @return
+    @AutoLog(value = "大模型基础信息-研究院:调用会话")
+    @Operation(summary = "大模型基础信息-研究院:调用会话")
+    @RequestMapping(value = "/modelDialogueByYanjiuyuan", method = {RequestMethod.POST})
+    public Result<?> modelDialogueByYanjiuyuan(
+            @RequestBody
+            @ApiParameter(name = "conversationId", description = "会话ID", required = true, location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String conversationId,
+            @RequestBody
+            @ApiParameter(name = "messageBOList", description = "对话信息", required = true, location = ApiEnum.PARAMETER_LOCATION_BODY)
+            List<MessageBO> messageBOList) {
+        return largeModelInfoService.modelDialogueByYanjiuyuan(conversationId, messageBOList);
+    }
      */
     @AutoLog(value = "大模型基础信息-研究院:调用会话")
     @Operation(summary = "大模型基础信息-研究院:调用会话")
     @RequestMapping(value = "/modelDialogueByYanjiuyuan", method = {RequestMethod.POST})
-    public Result<?> modelDialogueByYanjiuyuan(@RequestBody
-                                               @ApiParameter(name = "conversationId", description = "会话ID", required = true, location = ApiEnum.PARAMETER_LOCATION_BODY) String conversationId,
-                                               @RequestBody
-                                               @ApiParameter(name = "messageBOList", description = "对话信息", required = true, location = ApiEnum.PARAMETER_LOCATION_BODY) List<MessageBO> messageBOList) {
-        return largeModelInfoService.modelDialogueByYanjiuyuan(conversationId, messageBOList);
+    public Result<?> modelDialogueByYanjiuyuan(
+            @RequestBody com.hanwei.model.vo.ModelDialogueRequestVO request
+    ) {
+        return largeModelInfoService.modelDialogueByYanjiuyuan(
+                request.getConversationId(),
+                request.getMessageBOList()
+        );
     }
+
 }

@@ -18,16 +18,12 @@ import java.util.List;
  * @createTime : [2025/8/14 19:29]
  */
 public interface IModelBaseService {
-    //================================公共方法=========================================/
-
     /**
      * 将其他类型的返回值转换为Result类型
      * @param otherResult
      * @return
      */
     public Result changeResult(Object otherResult);
-
-    //================================公共方法=========================================/
 
     //================================知识库管理=========================================/
 
@@ -164,7 +160,6 @@ public interface IModelBaseService {
 
     /**
      * 文档切片查询
-     *
      * @param pageNo
      * @param pageSize
      * @param docId

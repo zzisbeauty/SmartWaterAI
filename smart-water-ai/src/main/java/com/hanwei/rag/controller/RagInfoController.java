@@ -72,8 +72,32 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
 
 
     /**
+     * 测试用：直接调用创建知识库方法
+     * @param ragName 知识库名称
+     * @return
+     */
+    @AutoLog(value = "知识库基础信息管理-测试创建")
+    @Operation(summary = "知识库基础信息管理-测试创建")
+    @PostMapping(value = "/testAdd")
+    public Result<?> testAdd(@RequestParam String ragName) {
+        try {
+            log.info("开始测试创建知识库，名称: " + ragName);
+            // 创建 RagInfo 实体
+            RagInfo ragInfo = new RagInfo();
+            ragInfo.setName(ragName);
+            ragInfo.setDescription("测试创建的知识库");
+            // 调用 saveRagInfo 方法
+            Result<?> result = ragInfoService.saveRagInfo(ragInfo);
+            log.info("测试创建知识库结果: " + result);
+            return result;
+        } catch (Exception e) {
+            log.error("测试创建知识库失败: " + e.getMessage(), e);
+            return Result.error(200, "测试创建失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 添加
-     *
      * @param ragInfo
      * @return
      */
@@ -89,9 +113,13 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
         }
     }
 
+
+
+
+
+
     /**
      * 编辑
-     *
      * @param ragInfo
      * @return
      */
@@ -102,6 +130,7 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
         return ragInfoService.updateRagInfo(ragInfo);
     }
 
+
     /**
      * 通过id删除
      *
@@ -111,8 +140,10 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
     @AutoLog(value = "知识库基础信息管理-通过id删除")
     @Operation(summary = "知识库基础信息管理-通过id删除")
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
-    public Result<?> delete(@RequestParam(name = "id", required = true)
-                            @ApiParameter(name = "id", description = "ID", required = true) String id) {
+    public Result<?> delete(
+            @RequestParam(name = "id", required = true)
+            @ApiParameter(name = "id", description = "ID", required = true)
+            String id) {
         return ragInfoService.removeRagInfoById(id);
     }
 
@@ -132,10 +163,10 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
         return Result.OK(ragInfo);
     }
 
+
     /**
      * 支持文件流的情况下直接使用该方式
      * 文件流
-     *
      * @param request
      * @param response
      * @param ragInfo

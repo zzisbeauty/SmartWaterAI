@@ -64,7 +64,6 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
 
     /**
      * 以下方法需要支持直接访问文件流（网关允许）
-     *
      * @param outputStream
      * @param paramMap
      * @param largeModelInfo
@@ -78,7 +77,6 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
 
     /**
      * 如果网关不知道直接获取文件流，转为base64后返回前端
-     *
      * @param paramMap
      * @param largeModelInfo
      */
@@ -87,8 +85,8 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
         QueryWrapper<LargeModelInfo> queryWrapper = QueryGenerator.initQueryWrapper(largeModelInfo, paramMap);
         List<LargeModelInfo> list = list(queryWrapper);
         //字典值转换
-//        List<JSON> listJson = commonApi.translateResultByDict(list);
-//        List<LargeModelInfo> result = listJson.stream().map(e -> JSON.toJavaObject(e,LargeModelInfo.class)).collect(Collectors.toList());
+        // List<JSON> listJson = commonApi.translateResultByDict(list);
+        // List<LargeModelInfo> result = listJson.stream().map(e -> JSON.toJavaObject(e,LargeModelInfo.class)).collect(Collectors.toList());
         String excelContent = null;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         EasyExcel.write(outputStream, LargeModelInfo.class).sheet("大模型基础信息").doWrite(list);
@@ -232,7 +230,6 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
     public Result<?> choiceLargeModelByYanjiuyuan(String largeModelName) {
         //调用设置模型
         Result result = null;
-
         try {
             result = yanjiuyuanHelper.choiceLargeModel(largeModelName);
             if(null == result || 0!=result.getCode()){
@@ -244,7 +241,6 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
             log.error("调用研究院设置模型失败 "+ e.getMessage());
             return Result.error(200,"调用研究院设置模型失败 "+ e.getMessage());
         }
-
         //组装数据给前端
         return Result.ok("设置成功");
     }
@@ -259,9 +255,8 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
     public Result<?> modelDialogueByYanjiuyuan(String conversationId, List<MessageBO> messageBOList) {
         //调用模型对话
         Result result = null;
-
         try {
-            result = yanjiuyuanHelper.modelDialogue(conversationId,messageBOList);
+            result = yanjiuyuanHelper.modelDialogue(conversationId, messageBOList);
             if(null == result || 0!=result.getCode()){
                 log.error("调用研究院调用模型对话失败 "+ result.getMessage());
                 return Result.error("调用研究院调用模型对话失败 "+ result.getMessage());
@@ -271,7 +266,6 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
             log.error("调用研究院调用模型对话失败 "+ e.getMessage());
             return Result.error("调用研究院调用模型对话失败 "+ e.getMessage());
         }
-
         //组装数据给前端
         return Result.ok(result.getResult());
     }

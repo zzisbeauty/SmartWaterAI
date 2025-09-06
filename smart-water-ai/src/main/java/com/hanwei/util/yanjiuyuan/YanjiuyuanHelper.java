@@ -83,10 +83,9 @@ public class YanjiuyuanHelper implements IModelBaseService {
     @Override
     public Result addRagInfo(String ragName) {
         Map<String, String> paramMap = new HashMap<>();
-        //组装数据
         paramMap.put("name", ragName);
         log.info("调用研究院创建知识库接口 发送报文: " + paramMap);
-        //调用研究院接口
+        //调用研究院 / 水务接口
         String resultStr = HttpUtil.createPost(urlPrefix + "/v1/kb/create").header(USERNAME, WORKNO).body(JSONUtil.toJsonStr(paramMap)).execute().body();
         YjyResult result = JSONUtil.toBean(resultStr, YjyResult.class);
         log.info("调用研究院创建知识库接口 返回报文: " + result);

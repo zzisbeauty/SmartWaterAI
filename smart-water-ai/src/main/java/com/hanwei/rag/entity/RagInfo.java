@@ -104,7 +104,8 @@ public class RagInfo {
     @Schema(description = "实体名称")
     @ExcelProperty("实体名称")
     @ApiParameter(name = "entityTypes", description = "实体名称", location = ApiEnum.PARAMETER_LOCATION_BODY)
-    private List entityTypes;
+    private List entityTypes; // 保留现状, RagInfoServiceImpl saveRagInfo 用  ragInfo.setEntityTypes(null);
+    // private List<String> entityTypes; // 添加泛型 <String>  RagInfoServiceImpl saveRagInfo 可以用 ragInfo.setEntityTypes(new ArrayList<>()) (未测试)
     /**生成方法*/
     @Schema(description = "生成方法")
     @ExcelProperty("生成方法")

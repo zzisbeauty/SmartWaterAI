@@ -38,7 +38,7 @@ public class TestMain {
         // testAddRagInfo(publicHelper);
         // testEditRagInfo(publicHelper);
         // testDeleteRagInfo(publicHelper);
-        // testGetRagInfoList(publicHelper);
+         testGetRagInfoList(publicHelper);
         // testGetRagInfoDetail(publicHelper);
         // testRagRecall(publicHelper);
         // testRagFileUpload(publicHelper);
@@ -58,7 +58,7 @@ public class TestMain {
 
         // testChoiceLargeModel(publicHelper);
 
-        testModelDialogue(publicHelper);
+        // testModelDialogue(publicHelper);
 
         System.out.println("=== 所有测试完成 ===");
     }
@@ -643,11 +643,9 @@ public class TestMain {
 
 
     /**
-     * 测试第一轮对话接口
-     */
+     * 测试对话接口; 此方法作废，保持 bo 不变的话，就要删掉 bo 中多加的属性，因此这里的方法不再可用
     private static void testModelDialogue(PublicHelperFunc publicHelper) {
         System.out.println("\n--- 测试第一轮模型对话 ---");
-
         try {
             // 创建第一轮对话消息
             MessageBO userMessage = new MessageBO();
@@ -656,22 +654,16 @@ public class TestMain {
             userMessage.setKb_id("e5176734-ead9-44cf-8bd6-124bc73564e0"); // 需要实际的知识库ID
             userMessage.setStreaming(false);
             // user_id 会在方法内部自动设置为时间戳
-
             List<MessageBO> messageList = Arrays.asList(userMessage);
-
             // 第一轮对话，conversation_id 为空
             String conversationId = null;
-
             System.out.println("测试参数 - conversationId: " + conversationId + ", messages: " + messageList.size() + "条");
-
             // 调用 PublicHelper 中实际实现的方法
             Result result = publicHelper.modelDialogue(conversationId, messageList);
-
             if (result != null) {
                 System.out.println("测试结果 - Code: " + result.getCode() + ", Message: " + result.getMessage());
                 if (result.getCode() == 0) {
                     System.out.println("✅ 第一轮对话成功，返回数据: " + result.getResult());
-
                     // 从返回结果中提取 conversation_id 用于后续对话
                     if (result.getResult() instanceof JSONObject) {
                         JSONObject resultData = (JSONObject) result.getResult();
@@ -684,13 +676,12 @@ public class TestMain {
             } else {
                 System.out.println("❌ 返回结果为空");
             }
-
         } catch (Exception e) {
             System.out.println("❌ 测试过程中发生异常: " + e.getMessage());
             e.printStackTrace();
         }
-
         System.out.println("PublicHelper.modelDialogue 方法测试完成\n");
     }
+     */
 
 }
