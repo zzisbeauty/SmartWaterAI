@@ -112,10 +112,10 @@ sis:
 
 #模型相关配置
 #模型选择，NO_MODEL：不使用模型
-#COMPANY_MODEL：集团研究院模型
+#COMPANY_MODEL ：集团研究院模型  (@20250925 已经切换为工作流模式，原来的模式代码已经删除)
 model:
   controller:
-    choice: NO_MODEL
+    choice: COMPANY_MODEL # NO_MODEL
 
 #数字人相关配置
 DigitalHuman:

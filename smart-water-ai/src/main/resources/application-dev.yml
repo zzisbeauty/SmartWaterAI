@@ -120,7 +120,7 @@ sis:
 #COMPANY_MODEL：集团研究院模型
 model:
   controller:
-    choice: NO_MODEL
+    choice: COMPANY_MODEL # NO_MODEL
 
 #数字人相关配置
 DigitalHuman:

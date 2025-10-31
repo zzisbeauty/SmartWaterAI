@@ -28,8 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
- * websocket服务器
- *
+ * websocket服务器：此处是对话服务的端点
  * @author CX
  */
 @ServerEndpoint("/SmartWaterModelServer/{channelCode}/{userId}/{userCode}")
@@ -114,14 +113,40 @@ public class WebSocketServer {
      */
     private Integer sliceCount = 0;
 
+    // 连接关闭调用的方法
+//    @OnClose
+//    public void _onClose() {
+//        if (webSocketMap.containsKey(clientId)) {
+//            webSocketMap.remove(clientId);
+//            subOnlineCount(); // 从set中删除
+//        }
+//        isSend = false;
+//        this.rasrClient.close(); //关闭连接时，关闭语音交互
+//        log.info("用户退出:" + clientId + ",当前在线人数为:" + getOnlineCount());
+//    }
+    @OnClose
+    public void onClose() {
+        if (webSocketMap.containsKey(clientId)) {
+            webSocketMap.remove(clientId);
+            subOnlineCount(); //从set中删除
+        }
+        isSend = false;
+        //关闭连接时，关闭语音交互 - 添加空值检查
+        if (this.rasrClient != null) {
+            this.rasrClient.close();
+        }
+        log.info("用户退出:" + clientId + ",当前在线人数为:" + getOnlineCount());
+    }
 
-    /**
-     * 连接建立成功调用的方法
-     */
+    // 连接建立成功调用的方法：此方法是在初始化会话消息
     @OnOpen
-    public void onOpen(Session session, @PathParam("channelCode") String channelCode, @PathParam("userId") String userId, @PathParam("userCode") String userCode) {
+    public void onOpen(
+            Session session,
+            @PathParam("channelCode") String channelCode,
+            @PathParam("userId") String userId,
+            @PathParam("userCode") String userCode
+    ) {
         System.out.println("建立websocket连接");
-
         this.session = session;
         this.channelCode = channelCode;
         this.userId = userId;
@@ -132,13 +157,9 @@ public class WebSocketServer {
             webSocketMap.put(clientId, this);
         } else {
             webSocketMap.put(clientId, this);
-            //在线数加1
-            addOnlineCount();
-
+            addOnlineCount(); //在线数加1
         }
-
         log.info("用户连接:" + userId + ",当前在线人数为:" + getOnlineCount());
-
         try {
             sendMessage("连接成功");
         } catch (Exception e) {
@@ -147,25 +168,8 @@ public class WebSocketServer {
     }
 
     /**
-     * 连接关闭调用的方法
-     */
-    @OnClose
-    public void onClose() {
-        if (webSocketMap.containsKey(clientId)) {
-            webSocketMap.remove(clientId);
-            //从set中删除
-            subOnlineCount();
-        }
-        isSend = false;
-
-        //关闭连接时，关闭语音交互
-        this.rasrClient.close();
-        log.info("用户退出:" + clientId + ",当前在线人数为:" + getOnlineCount());
-    }
-
-    /**
      * 收到客户端消息后调用的方法
-     *
+     * 客户端连接 WebSocket → 发送文本/语音命令 → 服务器处理并调用 AI 模型 → 返回结果给客户端
      * @param message 客户端发送过来的消息
      */
     @OnMessage(maxMessageSize = 5242880)
@@ -173,50 +177,35 @@ public class WebSocketServer {
         log.info("用户消息:" + clientId + ",报文:" + message);
         System.out.println("收到来自客户端的消息:" + message);
         try {
-            //处理文字消息
-            //调用规则控制器
-            if (CommonConstant.SIS_START.equals(message)) {
-                //初始化语音交互服务
+            //调用规则控制器，启动语音交互
+            if (CommonConstant.SIS_START.equals(message)) { //初始化语音交互服务
                 this.rasrClient = new RasrSisUtil(this).initRasrClient(CommonConstant.SIS_CONTINUE_STREAM);
                 this.rasrClient.sendStart();
                 isSend = true;
-
             }
-
-            if (CommonConstant.SIS_END.equals(message)) {
+            if (CommonConstant.SIS_END.equals(message)) { //初始化语音交互服务
                 isSend = false;
-                //初始化语音交互服务
                 this.rasrClient.sendEnd();
                 this.rasrClient.close();
             }
-
             //前端命令唤醒
-            if (CommonConstant.CMD_WAKE_UP.equals(message)) {
-                wakeUpFlag = true;
-            }
-
+            if (CommonConstant.CMD_WAKE_UP.equals(message)) {wakeUpFlag = true;}
             //前端命令休眠
-            if (CommonConstant.CMD_SLEEP.equals(message)) {
-                wakeUpFlag = false;
-            }
-
-            //前端发送命令
+            if (CommonConstant.CMD_SLEEP.equals(message)) {wakeUpFlag = false;}
+            //前端发送命令： 即前端发送进来的消息，调用 messageHandleController 进行处理
             if (message.startsWith(CommonConstant.CMD_TEXT) && StrUtil.isNotEmpty(message)) {
                 //调用规则控制器
                 ModelInvokingServiceImpl modelInvokingService = applicationContext.getBean(ModelInvokingServiceImpl.class);
                 ResultForFrontVo resultToCustomer = modelInvokingService.messageHandleController(this.channelCode, message);
-
                 if (Optional.ofNullable(resultToCustomer).isPresent()) {
-                    //发送结果到客户端
-                    sendMessage(JSON.toJSONString(resultToCustomer));
+                    sendMessage(JSON.toJSONString(resultToCustomer));  // 发送结果到客户端
                 }
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     @OnMessage(maxMessageSize = 5242880)
     public void onMessage(ByteBuffer bytes) {
@@ -225,7 +214,6 @@ public class WebSocketServer {
             if(isSend){
                 this.rasrClient.sendByte(bytes.array());
             }
-
             //处理长时间没有语音进行休眠逻辑
             if (wakeUpFlag) {
                 //判断唤醒时间是否超过阈值
@@ -233,47 +221,57 @@ public class WebSocketServer {
                     wakeUpFlag = false;
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
     /**
      * @param session
      * @param error
      */
+//    @OnError
+//    public void _onError(Session session, Throwable error) {
+//        log.error("用户错误:" + this.clientId + ",原因:" + error.getMessage());
+//        try {
+//            this.rasrClient.sendEnd();
+//        } catch (SisException e) {
+//            e.printStackTrace();
+//        }
+//        this.rasrClient.close();
+//        error.printStackTrace();
+//    }
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("用户错误:" + this.clientId + ",原因:" + error.getMessage());
         try {
-            this.rasrClient.sendEnd();
+            if (this.rasrClient != null) {
+                this.rasrClient.sendEnd();
+            }
         } catch (SisException e) {
             e.printStackTrace();
         }
-        this.rasrClient.close();
+        if (this.rasrClient != null) {
+            this.rasrClient.close();
+        }
         error.printStackTrace();
     }
 
-    /**
-     * 服务器消息推送
-     */
+
+    // 服务器消息推送
     public void sendMessage(String message) throws IOException {
         log.info("发送消息到:" + clientId + "，报文:" + message);
         this.session.getBasicRemote().sendText(message);
     }
 
-    /**
-     * 消息处理
-     */
+    // 消息处理
     public void handleMessage(String message) throws IOException {
         log.info("接收到处理消息" + message);
         /**过滤一个字信息*/
         if(StrUtil.isNotEmpty(message) && message.length() <2){
             return;
         }
-
-
         //处理唤醒休眠逻辑
         if (CommonUtils.preWakeUp(message)) {
             //封装提示结果
@@ -283,20 +281,16 @@ public class WebSocketServer {
             result.setTranslatedText(message);
             //发送结果到客户端
             sendMessage(JSON.toJSONString(result));
-
             //封装提示结果
             ResultForFrontVo result1 = new ResultForFrontVo();
             result1.setResultTo(CommonConstant.RESULT_TO_SYSTEM);
             result1.setResultType(CommonConstant.RESULT_TYPE_TRANSLATED_TEXT);
             result1.setTranslatedText(CommonUtils.getWakeUpReply());
-
             //发送结果到客户端
             sendMessage(JSON.toJSONString(result1));
-
             //记录唤醒标志
             wakeUpFlag = true;
             wakeUpTime = DateUtil.date();
-
         } else if (CommonUtils.preSleep(message)) {
             //封装提示结果
             ResultForFrontVo result = new ResultForFrontVo();
@@ -310,13 +304,10 @@ public class WebSocketServer {
             result1.setResultTo(CommonConstant.RESULT_TO_SYSTEM);
             result1.setResultType(CommonConstant.RESULT_TYPE_TRANSLATED_TEXT);
             result1.setTranslatedText(CommonUtils.getSleepReply());
-
             //发送结果到客户端
             sendMessage(JSON.toJSONString(result1));
-
             //记录唤醒标志
             wakeUpFlag = false;
-
         }else if(wakeUpFlag){
             //返回翻译后文字
             //封装提示结果
@@ -326,21 +317,16 @@ public class WebSocketServer {
             result.setTranslatedText(message);
             //发送结果到客户端
             sendMessage(JSON.toJSONString(result));
-
             //更新唤醒时间
             wakeUpTime = DateUtil.date();
-
             //调用规则控制器
             ModelInvokingServiceImpl modelInvokingService = applicationContext.getBean(ModelInvokingServiceImpl.class);
             ResultForFrontVo resultToCustomer = modelInvokingService.messageHandleController(this.channelCode, message);
-
             if (Optional.ofNullable(resultToCustomer).isPresent()) {
                 //发送结果到客户端
                 sendMessage(JSON.toJSONString(resultToCustomer));
             }
         }
-
-
     }
 
 
@@ -359,15 +345,10 @@ public class WebSocketServer {
     public static synchronized int getOnlineCount() {
         return onlineCount;
     }
-
     public static synchronized void addOnlineCount() {
         WebSocketServer.onlineCount++;
     }
-
     public static synchronized void subOnlineCount() {
         WebSocketServer.onlineCount--;
     }
-
-
 }
-

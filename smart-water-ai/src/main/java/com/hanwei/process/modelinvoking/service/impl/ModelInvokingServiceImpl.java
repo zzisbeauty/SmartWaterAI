@@ -32,7 +32,6 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class ModelInvokingServiceImpl extends ServiceImpl<ModelInvokingMapper, ModelInvokingInfo> implements IModelInvokingService {
-
     /**
      * 模型选择 抽取在配置文件中 参数见常量类CommonConstant中MODEL_CONTROLLER_CHOICE配置
      */
@@ -68,15 +67,13 @@ public class ModelInvokingServiceImpl extends ServiceImpl<ModelInvokingMapper, M
      */
     @Override
     public ResultForFrontVo messageHandleController(String channelCode, String message) {
-
         // 模型切换命令规则
         ResultForFrontVo changeModelResult = this.changeModel(message);
         if(Optional.ofNullable(changeModelResult).isPresent()){
             return changeModelResult;
         }
-
         if(Optional.ofNullable(message).isPresent()){
-            switch (MODEL_CONTROLLER_CHOICE){
+            switch (MODEL_CONTROLLER_CHOICE){ // 处理请求的分支选择
                 case CommonConstant.MODEL_CONTROLLER_CHOICE_NO_MODEL:
                     return this.noModelHandleService.noModelHandle(channelCode,message);
                 case CommonConstant.MODEL_CONTROLLER_CHOICE_COMPANY:
@@ -84,9 +81,8 @@ public class ModelInvokingServiceImpl extends ServiceImpl<ModelInvokingMapper, M
                 default:
                     break;
             }
-
         }
-
+        int a = 1;
         return null;
     }
 
