@@ -22,6 +22,7 @@ import com.hanwei.rag.bo.MessageBO;
 
 
 import com.hanwei.util.shuiwu.PublicHelperFunc;
+//import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
 
 
 import jakarta.servlet.ServletOutputStream;
@@ -112,8 +113,6 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
                 log.error("获取研究院模型列表失败" + result.getMessage());
                 return;
             }
-
-
 
             //组装研究院返回BO
             JSONObject jsonObject = (JSONObject) result.getResult();
