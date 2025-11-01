@@ -16,7 +16,7 @@ import com.hanwei.rag.service.IRagFileInfoService;
 import com.hanwei.rag.vo.FileChunkVO;
 import com.hanwei.rag.vo.RagFileListVO;
 
-//import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
+import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
 import com.hanwei.util.shuiwu.PublicHelperFunc;
 
 import jakarta.servlet.ServletOutputStream;
@@ -47,8 +47,8 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
     private CommonAPI commonApi;
 
     @Autowired
-    private PublicHelperFunc yanjiuyuanHelper;
-    // private YanjiuyuanHelper yanjiuyuanHelper;
+    //private PublicHelperFunc yanjiuyuanHelper;
+    private YanjiuyuanHelper yanjiuyuanHelper;
 
     /**
      * 以下方法需要支持直接访问文件流（网关允许）

@@ -23,7 +23,7 @@ import com.hanwei.rag.service.IRagInfoService;
 import com.hanwei.rag.vo.RagRecallVO;
 
 
-//import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
+import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
 import com.hanwei.util.shuiwu.PublicHelperFunc;
 
 
@@ -57,8 +57,8 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
     private CommonAPI commonApi;
 
     @Autowired
-    private PublicHelperFunc yanjiuyuanHelper;
-    // private YanjiuyuanHelper yanjiuyuanHelper;
+    //private PublicHelperFunc yanjiuyuanHelper;
+    private YanjiuyuanHelper yanjiuyuanHelper;
 
     @Autowired
     private IApplicationConfigService applicationConfigService;

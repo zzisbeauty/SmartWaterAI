@@ -21,8 +21,8 @@ import com.hanwei.model.service.ILargeModelInfoService;
 import com.hanwei.rag.bo.MessageBO;
 
 
-import com.hanwei.util.shuiwu.PublicHelperFunc;
-//import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
+//import com.hanwei.util.shuiwu.PublicHelperFunc;
+import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
 
 
 import jakarta.servlet.ServletOutputStream;
@@ -54,8 +54,8 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
     private CommonAPI commonApi;
 
     @Autowired
-    PublicHelperFunc yanjiuyuanHelper;
-    // YanjiuyuanHelper yanjiuyuanHelper;
+    //PublicHelperFunc yanjiuyuanHelper;
+    YanjiuyuanHelper yanjiuyuanHelper;
 
     @Autowired
     private IApplicationConfigService applicationConfigService;
@@ -252,13 +252,13 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
      */
     @Override
     public Result<?> modelDialogueByYanjiuyuan(String conversationId, List<MessageBO> messageBOList) {
-        //调用模型对话
+        // 调用模型对话
         Result result = null;
         try {
-            result = yanjiuyuanHelper.modelDialogue(conversationId, messageBOList);
-            if(null == result || 0!=result.getCode()){
-                log.error("调用研究院调用模型对话失败 "+ result.getMessage());
-                return Result.error("调用研究院调用模型对话失败 "+ result.getMessage());
+                result = yanjiuyuanHelper.modelDialogue(conversationId, messageBOList);
+                if(null == result || 0!=result.getCode()){
+                    log.error("调用研究院调用模型对话失败 "+ result.getMessage());
+                    return Result.error("调用研究院调用模型对话失败 "+ result.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -268,6 +268,4 @@ public class LargeModelInfoServiceImpl extends ServiceImpl<LargeModelInfoMapper,
         //组装数据给前端
         return Result.ok(result.getResult());
     }
-
-
 }

@@ -37,7 +37,6 @@ public class YanjiuyuanHelper implements IModelBaseService {
     @Value("${yanjiuyuan.urlPrefix}")
     private String urlPrefix;
 
-
     /**
      * 研究院鉴权临时用，后期去掉
      */
