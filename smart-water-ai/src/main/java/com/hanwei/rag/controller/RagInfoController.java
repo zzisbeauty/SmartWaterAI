@@ -56,17 +56,19 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
     @AutoLog(value = "知识库基础信息管理-分页列表查询")
     @Operation(summary = "知识库基础信息管理-分页列表查询")
     @RequestMapping(value = "/list", method = {RequestMethod.GET})
-    public Result<?> queryPageList(RagInfo ragInfo,
-                                   @RequestParam(name = "pageNo", defaultValue = "1")
-                                   @ApiParameter(name = "pageNo", description = "页码", required = true, demovalue = "1", defaultvalue = "1")
-                                           Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10")
-                                   @ApiParameter(name = "pageSize", description = "每页数量", required = true, demovalue = "1", defaultvalue = "10")
-                                           Integer pageSize,
-                                   HttpServletRequest req) {
+    public Result<?> queryPageList(
+            RagInfo ragInfo,
+            @RequestParam(name = "pageNo", defaultValue = "1")
+            @ApiParameter(name = "pageNo", description = "页码", required = true, demovalue = "1", defaultvalue = "1")
+            Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10")
+            @ApiParameter(name = "pageSize", description = "每页数量", required = true, demovalue = "1", defaultvalue = "10")
+            Integer pageSize,
+            HttpServletRequest req
+    ) {
         QueryWrapper<RagInfo> queryWrapper = QueryGenerator.initQueryWrapper(ragInfo, req.getParameterMap());
         Page<RagInfo> page = new Page<RagInfo>(pageNo, pageSize);
-        IPage<RagInfo> pageList = ragInfoService.page(page, queryWrapper);
+        IPage<RagInfo> pageList = ragInfoService.page(page, queryWrapper); // 本地
         return Result.OK(pageList);
     }
 
@@ -95,6 +97,8 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
             return Result.error(200, "测试创建失败: " + e.getMessage());
         }
     }
+
+
 
     /**
      * 添加
@@ -225,6 +229,10 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
         return ragInfoService.ragRecall(ragRecallVO);
     }
 
+
+
+    // ==============================================================
+
     /**
      * 获取知识库知识图谱
      *
@@ -234,8 +242,11 @@ public class RagInfoController extends BaseController<RagInfo, IRagInfoService> 
     @AutoLog(value = "知识库基础信息管理-获取知识库知识图谱")
     @Operation(summary = "知识库基础信息管理-获取知识库知识图谱")
     @RequestMapping(value = "/getRagGraph", method = {RequestMethod.GET})
-    public Result<?> getRagGraph(@RequestParam
-                                 @ApiParameter(name = "id", description = "ID", required = true) String id) {
+    public Result<?> getRagGraph(
+            @RequestParam
+            @ApiParameter(name = "id", description = "ID", required = true)
+            String id
+    ) {
         return ragInfoService.getRagGraph(id);
     }
 

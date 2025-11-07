@@ -24,7 +24,7 @@ import com.hanwei.rag.vo.RagRecallVO;
 
 
 import com.hanwei.util.yanjiuyuan.YanjiuyuanHelper;
-import com.hanwei.util.shuiwu.PublicHelperFunc;
+//import com.hanwei.util.shuiwu.PublicHelperFunc;
 
 
 import jakarta.servlet.ServletOutputStream;
@@ -68,7 +68,6 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
 
     /**
      * 以下方法需要支持直接访问文件流（网关允许）
-     *
      * @param outputStream
      * @param paramMap
      * @param ragInfo
@@ -82,7 +81,6 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
 
     /**
      * 如果网关不知道直接获取文件流，转为base64后返回前端
-     *
      * @param paramMap
      * @param ragInfo
      */
@@ -135,7 +133,7 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
 
         JSONObject jsonObject = (JSONObject) result.getResult();
         String yjyRagId = jsonObject.getStr("kb_id");
-        //保存 对一些参数设置默认值
+        // 保存 对一些参数设置默认值
         ragInfo.setChunkNum(0);
         ragInfo.setId(yjyRagId);
         ragInfo.setEmbdId("BAAI/bge-large-zh-v1.5@BAAI");
@@ -210,6 +208,7 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
         return Result.ok("删除成功");
     }
 
+
     /**
      * 知识库召回测试
      * @param ragRecallVO
@@ -240,6 +239,9 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
         return Result.ok(ragRecallBO);
     }
 
+
+    // ============================= 暂缺实现 =================================== \\
+
     /**
      * 设置知识库
      * @param choiceRagBO
@@ -265,8 +267,6 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
     }
 
 
-    // ============================= 暂缺实现 =================================== \\
-
     /**
      * 获取知识库知识图谱
      * @param id
@@ -274,7 +274,7 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
      */
     @Override
     public Result<?> getRagGraph(String id) {
-        //调用研究院获取图谱数据
+        // 调用研究院获取图谱数据
         Result result = null;
         try {
             result = yanjiuyuanHelper.getRagGraphInfo(id);
@@ -287,7 +287,7 @@ public class RagInfoServiceImpl extends ServiceImpl<RagInfoMapper, RagInfo> impl
             log.error("调用研究院获取图谱数据失败 "+ e.getMessage());
             return Result.error("调用研究院获取图谱数据失败 "+ e.getMessage());
         }
-        //组装数据给前端
+        // 组装数据给前端
         return Result.ok(result.getResult());
     }
 

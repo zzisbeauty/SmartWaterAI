@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
+
 
 /**
  * @author CX
@@ -85,7 +87,8 @@ public class YanjiuyuanHelper implements IModelBaseService {
         paramMap.put("name", ragName);
         log.info("调用研究院创建知识库接口 发送报文: " + paramMap);
         //调用研究院 / 水务接口
-        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/kb/create").header(USERNAME, WORKNO).body(JSONUtil.toJsonStr(paramMap)).execute().body();
+        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/kb/create").header(USERNAME, WORKNO).
+                body(JSONUtil.toJsonStr(paramMap)).execute().body();
         YjyResult result = JSONUtil.toBean(resultStr, YjyResult.class);
         log.info("调用研究院创建知识库接口 返回报文: " + result);
         return changeResult(result);
@@ -93,7 +96,6 @@ public class YanjiuyuanHelper implements IModelBaseService {
 
     /**
      * 更新知识库
-     *
      * @param ragInfo 知识库实体类
      * @return
      */
@@ -126,12 +128,16 @@ public class YanjiuyuanHelper implements IModelBaseService {
 
         paramMap.put("parser_id", ragInfo.getSlicingMethod());
         paramMap.put("permission", "team");
-        paramMap.put("manager_list", new ArrayList<String>().add("H05583"));
-        paramMap.put("auth_list", new ArrayList<String>().add("2122"));
+
+        //paramMap.put("manager_list", new ArrayList<String>().add("H05583"));
+        //paramMap.put("auth_list", new ArrayList<String>().add("2122"));
+        paramMap.put("manager_list", Arrays.asList("H05583"));
+        paramMap.put("auth_list", Arrays.asList("2122"));
 
         log.info("调用研究院更新知识库接口 发送报文: " + paramMap);
         //调用研究院接口
-        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/kb/update").header(USERNAME, WORKNO).body(JSONUtil.toJsonStr(paramMap)).execute().body();
+        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/kb/update").header(USERNAME, WORKNO).
+                body(JSONUtil.toJsonStr(paramMap)).execute().body();
         YjyResult result = JSONUtil.toBean(resultStr, YjyResult.class);
         log.info("调用研究院更新知识库接口 返回报文: " + result);
         return changeResult(result);
@@ -139,7 +145,6 @@ public class YanjiuyuanHelper implements IModelBaseService {
 
     /**
      * 知识库ID
-     *
      * @param id
      * @return
      */
@@ -151,7 +156,8 @@ public class YanjiuyuanHelper implements IModelBaseService {
 
         log.info("调用研究院删除知识库接口 发送报文: " + paramMap);
         //调用研究院接口
-        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/kb/rm").header(USERNAME, WORKNO).body(JSONUtil.toJsonStr(paramMap)).execute().body();
+        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/kb/rm").
+                header(USERNAME, WORKNO).body(JSONUtil.toJsonStr(paramMap)).execute().body();
         YjyResult result = JSONUtil.toBean(resultStr, YjyResult.class);
         log.info("调用研究院删除知识库接口 返回报文: " + result);
         return changeResult(result);
@@ -159,7 +165,6 @@ public class YanjiuyuanHelper implements IModelBaseService {
 
     /**
      * 获取知识库列表
-     *
      * @param pageNo
      * @param pageSize
      * @param ragName
@@ -232,7 +237,6 @@ public class YanjiuyuanHelper implements IModelBaseService {
 
     /**
      * 召回测试
-     *
      * @param ragRecallVo
      * @return
      * @throws Exception
@@ -266,7 +270,6 @@ public class YanjiuyuanHelper implements IModelBaseService {
 
     /**
      * 知识库文件上传
-     *
      * @param ragId
      * @param file
      * @return
@@ -281,7 +284,6 @@ public class YanjiuyuanHelper implements IModelBaseService {
         paramMap.put("kb_id", ragId);
         paramMap.put("file", toFile);
 
-
         log.info("调用研究院知识库文件上传接口 发送报文: " + paramMap);
         //调用研究院接口
         String resultStr = HttpUtil.createPost(urlPrefix + "/v1/document/upload")
@@ -292,34 +294,60 @@ public class YanjiuyuanHelper implements IModelBaseService {
         log.info("调用研究院知识库文件上传接口 返回报文: " + result);
         return changeResult(result);
     }
-
     /**
      * 将MultipartFile转换为File对象
-     *
      * @param multipartFile 要转换的MultipartFile对象
      * @return 转换后的File对象，如果转换失败则返回null
      */
+//    private File transferToFile(MultipartFile multipartFile) {
+//        //选择用缓冲区来实现这个转换即使用java 创建的临时文件 使用 MultipartFile.transferto()方法 。
+//        File file = null;
+//        try {
+//            String originalFilename = multipartFile.getOriginalFilename();
+//            //获取文件后缀
+//            String prefix = originalFilename.substring(originalFilename.lastIndexOf("."));
+//            // file = File.createTempFile("", "");    //创建临时文件 会报错 Prefix string "" too short: length must be at least 3
+//            file = File.createTempFile("shuiwuTMP", "");    //创建临时文件
+//            multipartFile.transferTo(file);
+//            //删除
+//            file.deleteOnExit();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return file;
+//    }
+    // 使用的是shuiwu重新实现的文件上传方案，是比上述方法更健壮的实现
     private File transferToFile(MultipartFile multipartFile) {
-        //选择用缓冲区来实现这个转换即使用java 创建的临时文件 使用 MultipartFile.transferto()方法 。
         File file = null;
         try {
             String originalFilename = multipartFile.getOriginalFilename();
-            //获取文件后缀
-            String prefix = originalFilename.substring(originalFilename.lastIndexOf("."));
-            file = File.createTempFile("", "");    //创建临时文件
+            if (originalFilename == null || originalFilename.isEmpty()) {
+                originalFilename = "upload_file";
+            }
+            // 获取文件扩展名
+            String extension = "";
+            int lastDotIndex = originalFilename.lastIndexOf(".");
+            if (lastDotIndex > 0) {
+                extension = originalFilename.substring(lastDotIndex);
+            }
+            // 创建临时文件，使用原始文件名作为前缀
+            String nameWithoutExt = lastDotIndex > 0 ?
+                    originalFilename.substring(0, lastDotIndex) : originalFilename;
+            file = File.createTempFile(nameWithoutExt + "_", extension);
+
             multipartFile.transferTo(file);
-            //删除
             file.deleteOnExit();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("MultipartFile转换为File失败", e);
+            return null;
         }
         return file;
     }
 
 
+
     /**
      * 知识库文件查询
-     *
      * @param pageNo
      * @param pageSize
      * @param fileName
@@ -601,10 +629,10 @@ public class YanjiuyuanHelper implements IModelBaseService {
         paramMap.put("top_n", choiceRagBO.getTopN());
         paramMap.put("vector_similarity_weight", choiceRagBO.getVectorSimilarityWeight());
 
-
         log.info("调用研究院设置知识库接口 发送报文: " + paramMap);
         //调用研究院接口
-        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/dialog/set").header(USERNAME, WORKNO).body(JSONUtil.toJsonStr(paramMap)).execute().body();
+        String resultStr = HttpUtil.createPost(urlPrefix + "/v1/dialog/set").
+                header(USERNAME, WORKNO).body(JSONUtil.toJsonStr(paramMap)).execute().body();
         YjyResult result = JSONUtil.toBean(resultStr, YjyResult.class);
         log.info("调用研究院设置知识库接口 返回报文: " + result);
         return changeResult(result);

@@ -97,16 +97,17 @@ shuiwu:
   bearerToken: dataset-T2Hi8kmyqQCMmh6ZEtwOV2Xt  # console api 权限控制
   fileUploadUrlPrefix: http://10.30.30.97:8080/v1/datasets
 yanjiuyuan:
-  urlPrefix: http://ailma.ai-test.xiangyuniot.com
+  # urlPrefix: http://ailma.ai-test.xiangyuniot.com # old 无权限验证的接口 作废
+  urlPrefix: http://ailma.ai-test.xiangyuniot.com/flow-permission # new 无权限验证的接口
 
-#华为SIS语音转换服务
+# 华为SIS语音转换服务
 sis:
   # 认证用的ak和sk硬编码到代码中或者明文存储都有很大的安全风险，建议在配置文件或者环境变量中密文存放，使用时解密，确保安全；
   ak: FXTBY3B4CV8VOLAMRUEP
   sk: uH9WdEOBWBXGnD7DvSjCLuwAzol3y5yioTy5rxw8
-  #区域
+  # 区域
   region: cn-north-4
-  #项目id 登录管理控制台，鼠标移动到右上角的用户名上，在下拉列表中选择我的凭证，在项目列表中查看项目id。多项目时，展开“所属区域”，从“项目ID”列获取子项目ID。
+  # 项目id 登录管理控制台，鼠标移动到右上角的用户名上，在下拉列表中选择我的凭证，在项目列表中查看项目id。多项目时，展开“所属区域”，从“项目ID”列获取子项目ID。
   projectId: 58abd68d3efb49f9a1082d03cbdc96dd
   #音频格式，如pcm16k16bit
   audioFormat: pcm16k16bit

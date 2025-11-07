@@ -55,7 +55,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 分页列表查询
-     *
      * @param ragFileInfo
      * @param pageNo
      * @param pageSize
@@ -65,14 +64,16 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-分页列表查询")
     @Operation(summary = "知识库文档管理-分页列表查询")
     @RequestMapping(value = "/list", method = {RequestMethod.GET})
-    public Result<?> queryPageList(RagFileInfo ragFileInfo,
-                                   @RequestParam(name = "pageNo", defaultValue = "1")
-                                   @ApiParameter(name = "pageNo", description = "页码", required = true, demovalue = "1", defaultvalue = "1")
-                                           Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10")
-                                   @ApiParameter(name = "pageSize", description = "每页数量", required = true, demovalue = "1", defaultvalue = "10")
-                                           Integer pageSize,
-                                   HttpServletRequest req) {
+    public Result<?> queryPageList(
+            RagFileInfo ragFileInfo,
+            @RequestParam(name = "pageNo", defaultValue = "1")
+            @ApiParameter(name = "pageNo", description = "页码", required = true, demovalue = "1", defaultvalue = "1")
+            Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10")
+            @ApiParameter(name = "pageSize", description = "每页数量", required = true, demovalue = "1", defaultvalue = "10")
+            Integer pageSize,
+            HttpServletRequest req
+    ) {
         QueryWrapper<RagFileInfo> queryWrapper = QueryGenerator.initQueryWrapper(ragFileInfo, req.getParameterMap());
         Page<RagFileInfo> page = new Page<RagFileInfo>(pageNo, pageSize);
         IPage<RagFileInfo> pageList = ragFileInfoService.page(page, queryWrapper);
@@ -81,7 +82,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 添加
-     *
      * @param ragFileInfo
      * @return
      */
@@ -95,12 +95,10 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
         } else {
             return Result.error(200,"添加失败！");
         }
-
     }
 
     /**
      * 编辑
-     *
      * @param ragFileInfo
      * @return
      */
@@ -124,8 +122,11 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-通过id删除")
     @Operation(summary = "知识库文档管理-通过id删除")
     @RequestMapping(value = "/delete", method = {RequestMethod.POST})
-    public Result<?> delete(@RequestParam(name = "id", required = true)
-                            @ApiParameter(name = "id", description = "ID", required = true) String id) {
+    public Result<?> delete(
+            @RequestParam(name = "id", required = true)
+            @ApiParameter(name = "id", description = "ID", required = true)
+            String id
+    ) {
         Boolean flag = ragFileInfoService.removeById(id);
         if (flag) {
             return Result.OK("删除成功！");
@@ -142,8 +143,11 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-批量删除")
     @Operation(summary = "知识库文档管理-批量删除")
     @RequestMapping(value = "/deleteBatch", method = {RequestMethod.POST})
-    public Result<?> deleteBatch(@RequestParam(name = "ids", required = true)
-                                 @ApiParameter(name = "ids", description = "IDs", required = true) String ids) {
+    public Result<?> deleteBatch(
+            @RequestParam(name = "ids", required = true)
+            @ApiParameter(name = "ids", description = "IDs", required = true)
+            String ids
+    ) {
         Boolean flag = this.ragFileInfoService.removeByIds(Arrays.asList(ids.split(",")));
         if (flag) {
             return Result.OK("批量删除成功！");
@@ -160,8 +164,11 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-通过id查询")
     @Operation(summary = "知识库文档管理-通过id查询")
     @GetMapping(value = "/queryById")
-    public Result<?> queryById(@RequestParam(name = "id", required = true)
-                               @ApiParameter(name = "id", description = "ID", required = true) String id) {
+    public Result<?> queryById(
+            @RequestParam(name = "id", required = true)
+            @ApiParameter(name = "id", description = "ID", required = true)
+            String id
+    ) {
         RagFileInfo ragFileInfo = ragFileInfoService.getById(id);
         return Result.OK(ragFileInfo);
     }
@@ -217,7 +224,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
 
     /**
      * 研究院:文档上传
-     *
      * @param ragId
      * @param file
      * @return
@@ -225,14 +231,17 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-研究院:文档上传")
     @Operation(summary = "知识库文档管理-研究院:文档上传")
     @RequestMapping(value = "/uploadFileByYanjiuyuan", method = {RequestMethod.POST})
-    public Result<?> uploadFileByYanjiuyuan(@RequestParam
-                                            @ApiParameter(name = "ragId", description = "知识库ID", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                    String ragId,
-                                            @RequestParam
-                                            @ApiParameter(name = "file", description = "文件流", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                    MultipartFile file) {
+    public Result<?> uploadFileByYanjiuyuan(
+            @RequestParam
+            @ApiParameter(name = "ragId", description = "知识库ID", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String ragId,
+            @RequestParam
+            @ApiParameter(name = "file", description = "文件流", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            MultipartFile file
+    ) {
         return ragFileInfoService.uploadFileByYanjiuyuan(ragId, file);
     }
+
 
     /**
      * 研究院:文档查询
@@ -258,6 +267,7 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
         return ragFileInfoService.getFileListByYanjiuyuan(pageNo, pageSize, fileName, ragId);
     }
 
+
     /**
      * 研究院:文档解析
      *
@@ -267,9 +277,13 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-研究院:文档解析")
     @Operation(summary = "知识库文档管理-研究院:文档解析")
     @RequestMapping(value = "/ragFileParsingByYanjiuyuan", method = {RequestMethod.POST})
-    public Result<?> ragFileParsing(@RequestBody FileParsingParamVO fileParsingParamVO) {
-        return ragFileInfoService.ragFileParsingByYanjiuyuan(fileParsingParamVO.getDocIdList(), fileParsingParamVO.getDeleteFlag(), fileParsingParamVO.getRunModel());
+    public Result<?> ragFileParsing(
+            @RequestBody FileParsingParamVO fileParsingParamVO
+    ) {
+        return ragFileInfoService.ragFileParsingByYanjiuyuan(fileParsingParamVO.getDocIdList(),
+                fileParsingParamVO.getDeleteFlag(), fileParsingParamVO.getRunModel());
     }
+
 
     /**
      * 知识库文件状态切换
@@ -285,50 +299,79 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     }
 
     /**
-     * 研究院:文档下载
-     *
+     * 研究院:文档下载； 注释掉的实现，分块逻辑有问题，在研究院后端服务前，下载的数据文件无法打开
      * @param fileId
      * @return
      */
+//    @AutoLog(value = "知识库文档管理-研究院:文档下载")
+//    @Operation(summary = "知识库文档管理-研究院:文档下载")
+//    @RequestMapping(value = "/downLoadRagFileByYanjiuyuan", method = {RequestMethod.GET})
+//    public void downLoadRagFileByYanjiuyuan(
+//            @RequestParam
+//            @ApiParameter(name = "fileId", description = "文档ID") String fileId,
+//            HttpServletResponse httpServletResponse
+//    ) {
+//        ServletOutputStream servletOutputStream = null;
+//        try {
+//            HttpResponse httpResponse = ragFileInfoService.downLoadRagFileByYanjiuyuan(fileId);
+//            httpServletResponse.setContentType("application/x-msdownload");
+//            httpServletResponse.setHeader("Content-Disposition","attachment;filename=file" );
+//            servletOutputStream = httpServletResponse.getOutputStream();
+//            byte[] tmp = httpResponse.bodyBytes();
+//            int len = 0;
+//            int size = tmp.length;
+//            int step = 1024;
+//            while(len < size){
+//                if(len + step >= size){
+//                    step = size - len -1;
+//                    servletOutputStream.write(tmp, len, len + step);
+//                    break;
+//                }else{
+//                    servletOutputStream.write(tmp, len, len + step);
+//                    len += step;
+//                }
+//            }
+//            servletOutputStream.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }finally {
+//            try {
+//                servletOutputStream.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
     @AutoLog(value = "知识库文档管理-研究院:文档下载")
     @Operation(summary = "知识库文档管理-研究院:文档下载")
     @RequestMapping(value = "/downLoadRagFileByYanjiuyuan", method = {RequestMethod.GET})
-    public void downLoadRagFileByYanjiuyuan(
-            @RequestParam
-            @ApiParameter(name = "fileId", description = "文档ID") String fileId,
-            HttpServletResponse httpServletResponse
-    ) {
+    public void downLoadRagFileByYanjiuyuan(@RequestParam String fileId, HttpServletResponse httpServletResponse) {
         ServletOutputStream servletOutputStream = null;
         try {
             HttpResponse httpResponse = ragFileInfoService.downLoadRagFileByYanjiuyuan(fileId);
             httpServletResponse.setContentType("application/x-msdownload");
-            httpServletResponse.setHeader("Content-Disposition","attachment;filename=file" );
+            httpServletResponse.setHeader("Content-Disposition","attachment;filename=file");
             servletOutputStream = httpServletResponse.getOutputStream();
+
             byte[] tmp = httpResponse.bodyBytes();
-            int len = 0;
-            int size = tmp.length;
-            int step = 1024;
-            while(len < size){
-                if(len + step >= size){
-                    step = size - len -1;
-                    servletOutputStream.write(tmp, len, len + step);
-                    break;
-                }else{
-                    servletOutputStream.write(tmp, len, len + step);
-                    len += step;
-                }
-            }
-            servletOutputStream.close();
+            // 直接写入所有字节,不需要分块
+            servletOutputStream.write(tmp);
+            servletOutputStream.flush();
+
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
-                servletOutputStream.close();
+                if (servletOutputStream != null) {
+                    servletOutputStream.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+
 
     /**
      * 研究院:文档删除
@@ -341,7 +384,8 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     public Result<?> deleteRagFileByYanjiuyuan(
             @RequestBody
             @ApiParameter(name = "docIdLis", description = "文档IDs", location = ApiEnum.PARAMETER_LOCATION_BODY)
-            List<String> docIdLis) {
+            List<String> docIdLis
+    ) {
         return ragFileInfoService.deleteRagFileByYanjiuyuan(docIdLis);
     }
 
@@ -368,18 +412,20 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-研究院:文档切片查询")
     @Operation(summary = "知识库文档管理-研究院:文档切片查询")
     @RequestMapping(value = "/getDocumentSlicingListByYanjiuyuan", method = {RequestMethod.POST})
-    public Result<?> getDocumentSlicingListByYanjiuyuan(@RequestParam(name = "pageNo", defaultValue = "1")
-                                                        @ApiParameter(name = "pageNo", description = "页码", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                                String pageNo,
-                                                        @RequestParam(name = "pageSize", defaultValue = "10")
-                                                        @ApiParameter(name = "pageSize", description = "分页大小", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                                String pageSize,
-                                                        @RequestParam(name = "docId")
-                                                        @ApiParameter(name = "docId", description = "文档ID", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                                String docId,
-                                                        @RequestParam(name = "keyWord",required = false)
-                                                        @ApiParameter(name = "keyWord", description = "查询词语", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                                String keyWord) {
+    public Result<?> getDocumentSlicingListByYanjiuyuan(
+            @RequestParam(name = "pageNo", defaultValue = "1")
+            @ApiParameter(name = "pageNo", description = "页码", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10")
+            @ApiParameter(name = "pageSize", description = "分页大小", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String pageSize,
+            @RequestParam(name = "docId")
+            @ApiParameter(name = "docId", description = "文档ID", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String docId,
+            @RequestParam(name = "keyWord",required = false)
+            @ApiParameter(name = "keyWord", description = "查询词语", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String keyWord
+    ) {
         return ragFileInfoService.getDocumentSlicingListByYanjiuyuan(pageNo, pageSize, docId, keyWord);
     }
 
@@ -393,15 +439,17 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
     @AutoLog(value = "知识库文档管理-研究院:文档切片状态切换")
     @Operation(summary = "知识库文档管理-研究院:文档切片状态切换")
     @RequestMapping(value = "/documentSlicingStatusSwitchByYanjiuyuan", method = {RequestMethod.POST})
-    public Result<?> documentSlicingStatusSwitchByYanjiuyuan(@RequestParam(name = "status")
-                                                             @ApiParameter(name = "status", description = "状态", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                                     Integer status,
-                                                             @RequestParam(name = "docId")
-                                                             @ApiParameter(name = "docId", description = "文档ID", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                                     String docId,
-                                                             @RequestParam(name = "slicingIdList",required = false)
-                                                             @ApiParameter(name = "slicingIdList", description = "切分数据", location = ApiEnum.PARAMETER_LOCATION_BODY)
-                                                                     List<String> slicingIdList) {
+    public Result<?> documentSlicingStatusSwitchByYanjiuyuan(
+            @RequestParam(name = "status")
+            @ApiParameter(name = "status", description = "状态", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            Integer status,
+            @RequestParam(name = "docId")
+            @ApiParameter(name = "docId", description = "文档ID", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            String docId,
+            @RequestParam(name = "slicingIdList",required = false)
+            @ApiParameter(name = "slicingIdList", description = "切分数据", location = ApiEnum.PARAMETER_LOCATION_BODY)
+            List<String> slicingIdList
+    ) {
         return ragFileInfoService.documentSlicingStatusSwitchByYanjiuyuan(status, docId, slicingIdList);
     }
 

@@ -52,7 +52,6 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
 
     /**
      * 以下方法需要支持直接访问文件流（网关允许）
-     *
      * @param outputStream
      * @param paramMap
      * @param ragFileInfo
@@ -111,6 +110,8 @@ public class RagFileInfoServiceImpl extends ServiceImpl<RagFileInfoMapper, RagFi
         }
         return Result.ok("文件上传成功");
     }
+
+
 
     /**
      * 知识库文件查询

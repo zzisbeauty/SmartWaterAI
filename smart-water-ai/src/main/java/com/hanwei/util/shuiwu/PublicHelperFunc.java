@@ -404,6 +404,15 @@ public class PublicHelperFunc implements IModelBaseService {
         if (ragInfo.getDescription() != null && !ragInfo.getDescription().trim().isEmpty()) {
             paramMap.put("description", ragInfo.getDescription());
         }
+
+        /**  测试 API 是报错了，临时加了一个这个
+        String parserId = ragInfo.getSlicingMethod();
+        if (parserId == null || parserId.trim().isEmpty()) {
+            parserId = "General";
+        }
+        paramMap.put("parser_id", parserId);
+        */
+
         // 直接使用 dify API 参数名的新增参数
         // log.info("调用 dify 编辑知识库接口失败: " + ragInfo.getIndexingTechnique());
         paramMap.put(
