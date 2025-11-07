@@ -303,45 +303,47 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
      * @param fileId
      * @return
      */
-//    @AutoLog(value = "知识库文档管理-研究院:文档下载")
-//    @Operation(summary = "知识库文档管理-研究院:文档下载")
-//    @RequestMapping(value = "/downLoadRagFileByYanjiuyuan", method = {RequestMethod.GET})
-//    public void downLoadRagFileByYanjiuyuan(
-//            @RequestParam
-//            @ApiParameter(name = "fileId", description = "文档ID") String fileId,
-//            HttpServletResponse httpServletResponse
-//    ) {
-//        ServletOutputStream servletOutputStream = null;
-//        try {
-//            HttpResponse httpResponse = ragFileInfoService.downLoadRagFileByYanjiuyuan(fileId);
-//            httpServletResponse.setContentType("application/x-msdownload");
-//            httpServletResponse.setHeader("Content-Disposition","attachment;filename=file" );
-//            servletOutputStream = httpServletResponse.getOutputStream();
-//            byte[] tmp = httpResponse.bodyBytes();
-//            int len = 0;
-//            int size = tmp.length;
-//            int step = 1024;
-//            while(len < size){
-//                if(len + step >= size){
-//                    step = size - len -1;
-//                    servletOutputStream.write(tmp, len, len + step);
-//                    break;
-//                }else{
-//                    servletOutputStream.write(tmp, len, len + step);
-//                    len += step;
-//                }
-//            }
-//            servletOutputStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }finally {
-//            try {
-//                servletOutputStream.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    /**
+    @AutoLog(value = "知识库文档管理-研究院:文档下载")
+    @Operation(summary = "知识库文档管理-研究院:文档下载")
+    @RequestMapping(value = "/downLoadRagFileByYanjiuyuan", method = {RequestMethod.GET})
+    public void downLoadRagFileByYanjiuyuan(
+            @RequestParam
+            @ApiParameter(name = "fileId", description = "文档ID") String fileId,
+            HttpServletResponse httpServletResponse
+    ) {
+        ServletOutputStream servletOutputStream = null;
+        try {
+            HttpResponse httpResponse = ragFileInfoService.downLoadRagFileByYanjiuyuan(fileId);
+            httpServletResponse.setContentType("application/x-msdownload");
+            httpServletResponse.setHeader("Content-Disposition","attachment;filename=file" );
+            servletOutputStream = httpServletResponse.getOutputStream();
+            byte[] tmp = httpResponse.bodyBytes();
+            int len = 0;
+            int size = tmp.length;
+            int step = 1024;
+            while(len < size){
+                if(len + step >= size){
+                    step = size - len -1;
+                    servletOutputStream.write(tmp, len, len + step);
+                    break;
+                }else{
+                    servletOutputStream.write(tmp, len, len + step);
+                    len += step;
+                }
+            }
+            servletOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                servletOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    */
     @AutoLog(value = "知识库文档管理-研究院:文档下载")
     @Operation(summary = "知识库文档管理-研究院:文档下载")
     @RequestMapping(value = "/downLoadRagFileByYanjiuyuan", method = {RequestMethod.GET})
@@ -370,8 +372,6 @@ public class RagFileInfoController extends BaseController<RagFileInfo, IRagFileI
             }
         }
     }
-
-
 
     /**
      * 研究院:文档删除
