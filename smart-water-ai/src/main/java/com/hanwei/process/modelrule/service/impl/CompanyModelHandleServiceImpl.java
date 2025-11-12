@@ -350,7 +350,8 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
             // 1. 生成认证信息
             log.info("=== 步骤1: 生成认证信息 ===");
             long timestamp = System.currentTimeMillis();
-            String username = "Y0126";
+            // String username = "Y0126";
+            String username = "H05583";
             log.info("认证参数 - username: {}, timestamp: {}", username, timestamp);
             String salt = AuthenticationUtil.encryptToSHA256(username + timestamp);
             String authentication = AuthenticationUtil.encryptToSHA256(username + timestamp + salt);
@@ -392,7 +393,7 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
                     .addHeader("username", username)
                     .addHeader("timestamp", String.valueOf(timestamp))
                     .addHeader("authentication", authentication)
-                    .addHeader("Api-Key", "Bearer app-X2mcHAdagIMKETKmPCS6zIRt")
+                    .addHeader("Api-Key", "Bearer app-t6fG01UwJZHUrHDxOf0wLUCt")
                     .addHeader("Content-Type", "application/json")
                     .post(body)
                     .build();
@@ -402,7 +403,7 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
             log.info("  - username: {}", username);
             log.info("  - timestamp: {}", timestamp);
             log.info("  - authentication: {}", authentication);
-            log.info("  - Api-Key: Bearer app-X2mcHAdagIMKETKmPCS6zIRt");
+            log.info("  - Api-Key: Bearer ... ...");
             log.info("  - Content-Type: application/json");
 
             // 5. 执行请求
