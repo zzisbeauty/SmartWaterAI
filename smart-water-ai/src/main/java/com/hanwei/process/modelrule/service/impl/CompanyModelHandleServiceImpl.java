@@ -29,6 +29,9 @@ import okhttp3.*;
 
 import java.util.concurrent.TimeUnit;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 /**
  * @Description: 集团研究院模型分配器
  * @Author: zwyx
@@ -39,6 +42,49 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapper, ModelInvokingInfo>
         implements ICompanyModelHandleService {
+
+    /**
+     * 解析模型响应,智能判断内容类型并封装为固定格式
+     * @param resultForFrontVo 原始响应对象
+     * @return 解析后的响应对象
+     */
+    private ResultForFrontVo parseResponseText(ResultForFrontVo resultForFrontVo) {
+        if (resultForFrontVo == null || resultForFrontVo.getTextResult() == null) {
+            return resultForFrontVo;
+        }
+
+        TextResult textResult = resultForFrontVo.getTextResult();
+        String textContent = textResult.getText();
+
+        if (StrUtil.isEmpty(textContent)) {
+            return resultForFrontVo;
+        }
+
+        // 检查是否包含 ```json ``` 代码块
+        Pattern pattern = Pattern.compile("```json\\n(.*?)\\n```", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(textContent);
+
+        if (matcher.find()) {
+            String jsonStr = matcher.group(1);
+            // 移除尾随逗号
+            jsonStr = jsonStr.replaceAll(",(\\s*[}\\]])", "$1");
+
+            try {
+                // 尝试解析 JSON
+                JSONObject parsedJson = JSON.parseObject(jsonStr);
+                // 如果解析成功,将解析后的 JSON 对象转换为 ResultForFrontVo
+                if (parsedJson != null) {
+                    resultForFrontVo = JSON.toJavaObject(parsedJson, ResultForFrontVo.class);
+                }
+            } catch (Exception e) {
+                // 解析失败,降级返回原始文本
+                log.warn("JSON 解析失败,返回原始文本: " + e.getMessage());
+            }
+        }
+
+        return resultForFrontVo;
+    }
+
 
     /**
      * 集团研究院模型规则匹配器
@@ -262,6 +308,7 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
         log.info("=== 外部接口调用处理完成 ===");
         log.info("最终返回结果类型: {}", resultForFrontVo.getResultType());
         log.info("最终返回结果内容: {}", resultForFrontVo.getTextResult() != null ? resultForFrontVo.getTextResult().getText() : "null");
+
         return resultForFrontVo;
     }
 }
