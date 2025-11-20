@@ -16,8 +16,6 @@
 
 
 
-
-
 # API 响应结构
 
 此结构来自hanwei工具类的统一封装
@@ -34,23 +32,23 @@
 
 - 响应示例1
 
-    ```json
-    {  
-    "success": true,  
-    "message": "操作成功",  
-    "code": 200,  
-    "result": {  
-        "description": "这里是具体的业务数据,根据不同API返回不同内容。可能是对象、数组或null"  
-    },  
-    "timestamp": 1699200000000  
-    }
-    ```
+   ```json
+   {  
+      "success": true,  
+      "message": "操作成功",  
+      "code": 200,  
+      "result": {  
+          "description": "这里是具体的业务数据,根据不同API返回不同内容。可能是对象、数组或null"  
+      },  
+      "timestamp": 1699200000000  
+   }
+   ```
 
 - 响应示例2
 
-    ```json
-    {'success': True, 'message': '保存成功', 'code': 200, 'result': '保存成功', 'timestamp': 1762401106104}
-    ```
+   ```json
+   {'success': True, 'message': '保存成功', 'code': 200, 'result': '保存成功', 'timestamp': 1762401106104}
+   ```
 
 
 
@@ -821,6 +819,7 @@ API与参数信息
 
 # 对话接口
 
+- local url 10.30.30.97
 - url `ws://10.0.15.40:8222/smartwaterai/SmartWaterModelServer/test_channel/test_user/test_code`
 
 ## 请求信息分为三种
