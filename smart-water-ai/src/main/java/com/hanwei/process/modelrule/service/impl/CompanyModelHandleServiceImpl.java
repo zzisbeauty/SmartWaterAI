@@ -139,11 +139,7 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
 
             // 4. 构建请求
             log.info("=== 步骤4: 构建HTTP请求 ===");
-            RequestBody body = RequestBody.create(
-                    jsonPayload,
-                    MediaType.parse("application/json; charset=utf-8")
-            );
-
+            RequestBody body = RequestBody.create(jsonPayload, MediaType.parse("application/json; charset=utf-8"));
             String url = "http://ailma.ai-test.xiangyuniot.com/ailma-gw/ailma-workflow/v1/workflows/run";
             Request request = new Request.Builder()
                     .url(url)
@@ -155,6 +151,7 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
                     .post(body)
                     .build();
 
+            /**
             log.info("请求URL: {}", url);
             log.info("请求头信息:");
             log.info("  - username: {}", username);
@@ -162,8 +159,9 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
             log.info("  - authentication: {}", authentication);
             log.info("  - Api-Key: Bearer ... ...");
             log.info("  - Content-Type: application/json");
+            */
 
-            // 5. 执行请求
+            // 5. 执行请求 - 获取响应 - 解析响应
             log.info("=== 步骤5: 执行HTTP请求 ===");
             log.info("开始发送请求到外部接口...");
             long startTime = System.currentTimeMillis();
@@ -174,7 +172,7 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
                 String resultStr = response.body().string();
                 int statusCode = response.code();
 
-                log.info("=== 步骤6: 处理响应 ===");
+                log.info("=== 步骤6: 获取响应 ===");
                 log.info("响应状态码: {}", statusCode);
                 log.info("响应头信息: {}", response.headers());
                 log.info("响应体长度: {} 字符", resultStr != null ? resultStr.length() : 0);
@@ -189,7 +187,6 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
                         resultForFrontVo.setResultTo(CommonConstant.RESULT_TO_SYSTEM);
                         resultForFrontVo.setResultType(CommonConstant.RESULT_TYPE_TEXT);
                         TextResult textResult = new TextResult();
-
                         // 解析 data.outputs.text 字段
                         String responseText = "接口调用成功，但未获取到有效响应内容";
                         if (resultJson.containsKey("data")) {
@@ -201,15 +198,9 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
                                 if (outputs != null && outputs.containsKey("text")) {
                                     responseText = outputs.getString("text");
                                     log.info("成功提取text字段: {}", responseText);
-                                } else {
-                                    log.warn("outputs中没有text字段，outputs内容: {}", outputs);
-                                }
-                            } else {
-                                log.warn("data中没有outputs字段，data内容: {}", data);
-                            }
-                        } else {
-                            log.warn("响应中没有data字段");
-                        }
+                                } else {log.warn("outputs中没有text字段，outputs内容: {}", outputs);}
+                            } else {log.warn("data中没有outputs字段，data内容: {}", data);}
+                        } else {log.warn("响应中没有data字段");}
                         textResult.setText(responseText);
                         textResult.setSpeechText(responseText);
                         resultForFrontVo.setTextResult(textResult);
