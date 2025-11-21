@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 @Slf4j
 public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapper, ModelInvokingInfo>
         implements ICompanyModelHandleService {
-
     /**
      * 解析模型响应,智能判断内容类型并封装为固定格式
      * @param resultForFrontVo 原始响应对象
@@ -52,10 +51,8 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
         if (resultForFrontVo == null || resultForFrontVo.getTextResult() == null) {
             return resultForFrontVo;
         }
-
         TextResult textResult = resultForFrontVo.getTextResult();
         String textContent = textResult.getText();
-
         if (StrUtil.isEmpty(textContent)) {
             return resultForFrontVo;
         }
@@ -63,25 +60,18 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
         // 检查是否包含 ```json ``` 代码块
         Pattern pattern = Pattern.compile("```json\\n(.*?)\\n```", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(textContent);
-
         if (matcher.find()) {
             String jsonStr = matcher.group(1);
-            // 移除尾随逗号
-            jsonStr = jsonStr.replaceAll(",(\\s*[}\\]])", "$1");
-
+            jsonStr = jsonStr.replaceAll(",(\\s*[}\\]])", "$1"); // 移除尾随逗号
             try {
-                // 尝试解析 JSON
-                JSONObject parsedJson = JSON.parseObject(jsonStr);
-                // 如果解析成功,将解析后的 JSON 对象转换为 ResultForFrontVo
-                if (parsedJson != null) {
+                JSONObject parsedJson = JSON.parseObject(jsonStr); // 尝试解析 JSON
+                if (parsedJson != null) { // 如果解析成功,将解析后的 JSON 对象转换为 ResultForFrontVo
                     resultForFrontVo = JSON.toJavaObject(parsedJson, ResultForFrontVo.class);
                 }
             } catch (Exception e) {
-                // 解析失败,降级返回原始文本
-                log.warn("JSON 解析失败,返回原始文本: " + e.getMessage());
+                log.warn("JSON 解析失败,返回原始文本: " + e.getMessage()); // 解析失败,降级返回原始文本
             }
         }
-
         return resultForFrontVo;
     }
 
@@ -146,7 +136,7 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
                     .addHeader("username", username)
                     .addHeader("timestamp", String.valueOf(timestamp))
                     .addHeader("authentication", authentication)
-                    .addHeader("Api-Key", "Bearer app-t6fG01UwJZHUrHDxOf0wLUCt")
+                    .addHeader("Api-Key", "Bearer app-t6fG01UwJZHUrHDxOf0wLUCt") // work-flow app key
                     .addHeader("Content-Type", "application/json")
                     .post(body)
                     .build();
