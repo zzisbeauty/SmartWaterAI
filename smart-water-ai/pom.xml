@@ -30,6 +30,26 @@
             <systemPath>${pom.basedir}/lib/huaweicloud-java-sdk-sis-1.8.3.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.3</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/joda-time-2.10.3.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.huaweicloud</groupId>
+            <artifactId>java-sdk-core</artifactId>
+            <version>3.0.12</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/java-sdk-core-3.0.12.jar</systemPath>
+        </dependency>
+
+
+
+
+
         <!-- websocket -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

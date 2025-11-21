@@ -92,6 +92,9 @@ public class CompanyModelHandleServiceImpl extends ServiceImpl<ModelInvokingMapp
             if (message.startsWith("CMD_TEXT:")) {
                 cleanMessage = message.substring("CMD_TEXT:".length());
                 log.info("清理消息前缀后: {}", cleanMessage);
+            } else if (message.startsWith("CMD_TEXT")) {
+                cleanMessage = message.substring("CMD_TEXT".length());
+                log.info("清理消息前缀后: {}", cleanMessage);
             }
 
             // 1. 生成认证信息
